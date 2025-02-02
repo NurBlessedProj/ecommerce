@@ -605,4 +605,11 @@ const CatalogContent = () => {
   );
 };
 
-export default CatalogContent;
+const catalogPage = () => {
+  return (
+    <Suspense>
+      <CatalogContent />
+    </Suspense>
+  );
+};
+export default catalogPage;
