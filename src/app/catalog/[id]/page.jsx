@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Minus, Plus, ZoomIn, ChevronLeft, ChevronRight } from "lucide-react";
@@ -6,6 +6,8 @@ import { productData } from "../../../../products";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
+import { useCart } from "@/context/cart";
+import { useRouter } from "next/navigation";
 
 export default function ProductDetails({ params }) {
   const [productDetails, setProductDetails] = useState(null);
@@ -15,6 +17,18 @@ export default function ProductDetails({ params }) {
   const [quantity, setQuantity] = useState(1);
   const [currentPage, setCurrentPage] = useState(0);
   const productsPerPage = 4;
+  const router = useRouter(); // Add this
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    addToCart(productDetails, quantity);
+  };
+
+  // Add handler for Pay Now
+  const handlePayNow = () => {
+    addToCart(productDetails, quantity);
+    router.push("/checkout");
+  };
 
   useEffect(() => {
     const product = productData.find((p) => p.id === parseInt(params.id));
@@ -172,10 +186,16 @@ export default function ProductDetails({ params }) {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <button className="flex-1 bg-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl text-sm sm:text-base">
+                <button
+                  onClick={handleAddToCart}
+                  className="flex-1 bg-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl text-sm sm:text-base"
+                >
                   Add to Cart
                 </button>
-                <button className="flex-1 bg-black text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors shadow-lg hover:shadow-xl text-sm sm:text-base">
+                <button
+                  onClick={handlePayNow}
+                  className="flex-1 bg-black text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors shadow-lg hover:shadow-xl text-sm sm:text-base"
+                >
                   Pay Now
                 </button>
               </div>
