@@ -219,7 +219,7 @@ const CatalogContent = () => {
 
   // Handle product click - redirect to product details page
   const handleProductClick = (productId) => {
-    router.push(`/product/${productId}`);
+    router.push(`/catalog/${productId}`);
   };
   return (
     <>
@@ -448,6 +448,7 @@ const CatalogContent = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {getCurrentProducts().map((product) => (
                   <div
+                    onClick={() => handleProductClick(product.id)}
                     key={product.id}
                     className="group relative bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
                   >
