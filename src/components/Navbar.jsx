@@ -259,15 +259,33 @@ const Navbar = () => {
             </Link>
           </nav>
 
-          <button
-            className="md:hidden p-2 hover:bg-gray-100 rounded-md transition-colors
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-expanded={isMobileMenuOpen}
-            aria-label="Toggle menu"
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/cart"
+              className="relative p-2 hover:bg-gray-100 rounded-md transition-colors
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              aria-label={`Cart with ${cartCount} items`}
+            >
+              <ShoppingBag className="w-6 h-6" />
+              {cartCount > 0 && (
+                <span
+                  className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs 
+                  min-w-[20px] h-5 flex items-center justify-center rounded-full"
+                >
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+            <button
+              className="md:hidden p-2 hover:bg-gray-100 rounded-md transition-colors
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-expanded={isMobileMenuOpen}
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {isMobileMenuOpen && (
@@ -284,13 +302,32 @@ const Navbar = () => {
                     className="h-8 w-auto object-contain"
                   />
                 </Link>
-                <button
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 hover:bg-gray-100 rounded-md transition-colors"
-                  aria-label="Close menu"
-                >
-                  <X size={24} />
-                </button>
+
+                <div className="flex items-center gap-3">
+                  <Link
+                    href="/cart"
+                    className="relative p-2 hover:bg-gray-100 rounded-md transition-colors
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    aria-label={`Cart with ${cartCount} items`}
+                  >
+                    <ShoppingBag className="w-6 h-6" />
+                    {cartCount > 0 && (
+                      <span
+                        className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs 
+                  min-w-[20px] h-5 flex items-center justify-center rounded-full"
+                      >
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                  <button
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                    aria-label="Close menu"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
               </div>
 
               <SearchBar
