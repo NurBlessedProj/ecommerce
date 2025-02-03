@@ -4,7 +4,7 @@ import { Heart, Eye, ArrowRight, Users, Package, TrendingUp, Truck } from 'lucid
 
 const TrendingSection = ({ categories, trendingItems, bottomBanners, activeCategory, setActiveCategory, router }) => {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container max-w-[1350px] mx-auto px-4 py-8">
       {/* Main Header */}
       <div className="text-center mb-8">
         <span className="text-blue-600 text-xs md:text-sm font-medium tracking-wider uppercase block mb-2">
