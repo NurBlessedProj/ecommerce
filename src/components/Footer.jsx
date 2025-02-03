@@ -76,7 +76,7 @@ const Footer = () => {
               </p>
             </div>
             <div>
-              <form className="flex gap-2">
+              <form className="flex flex-col md:flex-row gap-2">
                 <input
                   type="email"
                   placeholder="Your email address"
@@ -100,8 +100,8 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <Link href="/" className="block mb-6">
               <img
-              src="/favicon.ico"
-              alt="COSMO PROF"
+                src="/favicon.ico"
+                alt="COSMO PROF"
                 className="h-12 w-auto object-contain"
               />
             </Link>
