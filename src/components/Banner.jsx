@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -9,8 +9,7 @@ const defaultBanners = [
     subtitle: "SAVE 30% TODAY",
     description: "Premium Body Lotions for Professional Care",
     cta: "Shop Now",
-    image:
-      "/images/c1.jpg",
+    image: "/images/c1.jpg",
     textColor: "text-white",
   },
   {
@@ -19,8 +18,7 @@ const defaultBanners = [
     subtitle: "NEW COLLECTION",
     description: "Discover Our Range of Body Treatment Products",
     cta: "Explore More",
-    image:
-      "/images/c2.jpg",
+    image: "/images/c2.jpg",
     textColor: "text-white",
   },
   {
@@ -38,54 +36,64 @@ const Banner = ({ banners = defaultBanners }) => {
   const router = useRouter();
   const [currentBanner, setCurrentBanner] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const handleSlideChange = useCallback(
+    (newIndex) => {
+      if (!isTransitioning) {
+        setIsTransitioning(true);
+        setCurrentBanner(newIndex);
+        setTimeout(() => setIsTransitioning(false), 1000);
+      }
+    },
+    [isTransitioning]
+  );
+
+  const handleNextSlide = useCallback(() => {
+    const nextIndex =
+      currentBanner === banners.length - 1 ? 0 : currentBanner + 1;
+    handleSlideChange(nextIndex);
+  }, [currentBanner, banners.length, handleSlideChange]);
+
+  const handlePrevSlide = useCallback(() => {
+    const prevIndex =
+      currentBanner === 0 ? banners.length - 1 : currentBanner - 1;
+    handleSlideChange(prevIndex);
+  }, [currentBanner, banners.length, handleSlideChange]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      handleNextSlide();
-    }, 6000);
-
+    let timer;
+    if (!isPaused) {
+      timer = setInterval(() => {
+        handleNextSlide();
+      }, 6000);
+    }
     return () => clearInterval(timer);
-  }, [currentBanner]);
-
-  const handleNextSlide = () => {
-    if (!isTransitioning) {
-      setIsTransitioning(true);
-      setCurrentBanner((current) =>
-        current === banners.length - 1 ? 0 : current + 1
-      );
-      setTimeout(() => setIsTransitioning(false), 1000);
-    }
-  };
-
-  const handlePrevSlide = () => {
-    if (!isTransitioning) {
-      setIsTransitioning(true);
-      setCurrentBanner((current) =>
-        current === 0 ? banners.length - 1 : current - 1
-      );
-      setTimeout(() => setIsTransitioning(false), 1000);
-    }
-  };
+  }, [handleNextSlide, isPaused]);
 
   return (
-    <section className="relative h-[600px] md:h-[700px] lg:h-[800px] overflow-hidden">
+    <section
+      className="relative h-[600px] md:h-[700px] lg:h-[800px] overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       {/* Slides */}
       <div className="relative h-full">
         {banners.map((banner, index) => (
           <div
-          key={banner.id}
-          className={`absolute inset-0 transition-all duration-1000 ease-in-out
+            key={banner.id}
+            className={`absolute inset-0 transition-all duration-1000 ease-in-out
               ${
                 currentBanner === index
                   ? "opacity-100 translate-x-0"
                   : index < currentBanner
                   ? "opacity-0 -translate-x-full"
                   : "opacity-0 translate-x-full"
-                }`}
-                aria-hidden={currentBanner !== index}
-                >
+              }`}
+            aria-hidden={currentBanner !== index}
+          >
             {/* Background Image */}
-                <div className="absolute h-full w-full top-0 left-0 bg-black/30 z-[99]"></div>
+            <div className="absolute h-full w-full top-0 left-0 bg-black/30 z-[99]"></div>
             <img
               src={banner.image}
               alt=""
@@ -189,7 +197,7 @@ const Banner = ({ banners = defaultBanners }) => {
           {banners.map((_, index) => (
             <button
               key={index}
-              onClick={() => !isTransitioning && setCurrentBanner(index)}
+              onClick={() => !isTransitioning && handleSlideChange(index)}
               className="pointer-events-auto group relative h-2 w-12 focus:outline-none"
               aria-label={`Go to slide ${index + 1}`}
             >
