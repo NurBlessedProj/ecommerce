@@ -101,7 +101,7 @@ export default function ProductDetails({ params }) {
                   href="/catalog"
                   className="text-gray-500 hover:text-gray-700"
                 >
-                  Catalog
+                  Catalogof
                 </Link>
               </li>
               <li>
