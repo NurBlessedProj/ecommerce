@@ -46,6 +46,101 @@ const Dashboard = () => {
     },
     // Add more sample products as needed
   ]);
+  // Add these functions to your Dashboard component
+
+  const API_URL = "http://localhost:5000/api";
+
+  // Fetch products
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/products`);
+      const data = await response.json();
+      if (data.success) {
+        setProducts(data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Create/Update product
+  const handleSave = async (formData) => {
+    try {
+      setLoading(true);
+      const form = new FormData();
+      Object.keys(formData).forEach((key) => {
+        form.append(key, formData[key]);
+      });
+
+      if (formData.image) {
+        form.append("image", formData.image);
+      }
+
+      const url = selectedProduct
+        ? `${API_URL}/products/${selectedProduct.id}`
+        : `${API_URL}/products`;
+
+      const method = selectedProduct ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        body: form,
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        fetchProducts();
+        setShowEditModal(false);
+        setSelectedProduct(null);
+      }
+    } catch (error) {
+      console.error("Error saving product:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete product
+  const confirmDelete = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${API_URL}/products/${selectedProduct.id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        fetchProducts();
+        setShowDeleteModal(false);
+        setSelectedProduct(null);
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add useEffect to fetch products on component mount
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const [imagePreview, setImagePreview] = useState(null);
+
+  // Add this handler for image changes
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   // Filter products based on search and category
   const filteredProducts = products.filter((product) => {
@@ -70,28 +165,6 @@ const Dashboard = () => {
   const handleDelete = (product) => {
     setSelectedProduct(product);
     setShowDeleteModal(true);
-  };
-
-  // Confirm delete handler
-  const confirmDelete = () => {
-    setProducts(products.filter((p) => p.id !== selectedProduct.id));
-    setShowDeleteModal(false);
-    setSelectedProduct(null);
-  };
-
-  // Save product handler
-  const handleSave = (updatedProduct) => {
-    if (updatedProduct.id) {
-      // Update existing product
-      setProducts(
-        products.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
-      );
-    } else {
-      // Add new product
-      setProducts([...products, { ...updatedProduct, id: Date.now() }]);
-    }
-    setShowEditModal(false);
-    setSelectedProduct(null);
   };
 
   return (
@@ -374,6 +447,43 @@ const Dashboard = () => {
                     rows={4}
                     className="block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
                   />
+                </div>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Product Image
+                </label>
+                <div className="mt-1 flex items-center space-x-4">
+                  <div className="w-32 h-32 border rounded-lg overflow-hidden bg-gray-100">
+                    {imagePreview || selectedProduct?.image ? (
+                      <Image
+                        src={imagePreview || selectedProduct?.image}
+                        alt="Product preview"
+                        width={128}
+                        height={128}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package className="w-8 h-8 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  <label className="cursor-pointer">
+                    <div className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2">
+                      <Upload className="w-5 h-5 text-gray-500" />
+                      <span className="text-sm text-gray-600">
+                        Upload Image
+                      </span>
+                    </div>
+                    <input
+                      type="file"
+                      name="image"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
               </div>
 

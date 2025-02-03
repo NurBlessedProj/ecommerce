@@ -44,12 +44,12 @@ const Footer = () => {
     contact: [
       {
         icon: Mail,
-        content: "support@cosmopro.com",
-        href: "mailto:support@cosmopro.com",
+        content: "support@itapelo.com",
+        href: "mailto:support@itapelo.com",
       },
       {
         icon: PhoneIcon,
-        content: "+1 (800) COSMO-PRO",
+        content: "+1 (800) Itapelo",
         href: "tel:+18002676677",
       },
       {
@@ -198,7 +198,7 @@ const Footer = () => {
         <div className="py-6 border-t border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-gray-600 text-sm">
-              © {currentYear} COSMO PROF. All rights reserved.
+              © {currentYear} ITAPELO. All rights reserved.
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <span>Professional Beauty Supply</span>
