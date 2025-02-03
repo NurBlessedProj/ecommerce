@@ -398,7 +398,12 @@ export default function Home() {
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:block">
                               <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
                                 <div className="flex justify-center space-x-2 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-300">
-                                  <button className="p-2 sm:p-3 bg-white/95 rounded-lg sm:rounded-xl shadow-lg hover:bg-white transition-colors backdrop-blur-sm">
+                                  <button
+                                    onClick={() =>
+                                      router.push(`/catalog/${product.id}`)
+                                    }
+                                    className="p-2 sm:p-3 bg-white/95 rounded-lg sm:rounded-xl shadow-lg hover:bg-white transition-colors backdrop-blur-sm"
+                                  >
                                     <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
                                   </button>
                                   <button className="p-2 sm:p-3 bg-white/95 rounded-lg sm:rounded-xl shadow-lg hover:bg-white transition-colors backdrop-blur-sm">
@@ -446,7 +451,12 @@ export default function Home() {
                             </div>
 
                             {/* Title */}
-                            <h3 className="font-medium text-sm sm:text-base mb-1.5 sm:mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                            <h3
+                              onClick={() =>
+                                router.push(`/catalog/${product.id}`)
+                              }
+                              className="font-medium cursor-pointer text-sm sm:text-base mb-1.5 sm:mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors"
+                            >
                               {product.name}
                             </h3>
                             <div className="flex items-center mb-2 sm:mb-3">
