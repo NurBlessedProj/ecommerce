@@ -296,7 +296,7 @@ const Navbar = () => {
               <div className="flex justify-between items-center mb-4 border-b pb-4">
                 <Link href="/" className="relative">
                   <img
-                    src="/logo.avif"
+                    src="/favicon.ico"
                     alt="COSMO PROF"
                     className="h-8 w-auto object-contain"
                   />
