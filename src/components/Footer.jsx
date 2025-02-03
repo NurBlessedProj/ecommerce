@@ -32,7 +32,7 @@ const Footer = () => {
       { name: "Contact", href: "/contact" },
     ],
     info: [
-      { name: "Refund Policy", href: "/refund" },
+      { name: "Refund Policy", href: "/privacy" },
       { name: "Terms of Service", href: "/terms" },
     ],
     catalog: [
