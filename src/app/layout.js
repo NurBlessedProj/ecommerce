@@ -23,8 +23,14 @@ export default function RootLayout({ children }) {
       <body className={`${montserrat.variable} font-sans antialiased`}>
         <SearchProvider>
           <CartProvider>
-            <Toaster richColors position="top-right" expand/>
-            {children}</CartProvider>
+            <Toaster richColors position="top-right" expand />
+            {children}
+
+            <script
+              src="//code.tidio.co/zxjsknngtt4kdpz7oplu3hqihnabniqr.js"
+              async
+            ></script>
+          </CartProvider>
         </SearchProvider>
       </body>
     </html>
