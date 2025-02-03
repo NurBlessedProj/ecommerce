@@ -10,7 +10,7 @@ const defaultBanners = [
     description: "Premium Body Lotions for Professional Care",
     cta: "Shop Now",
     image:
-      "https://thethingswellmake.com/wp-content/uploads/2019/11/241-how-to-make-a-simple-basic-homemade-lotion-and-customize-it-for-your-skin-type-4-2.jpg",
+      "/images/c1.jpg",
     textColor: "text-white",
   },
   {
@@ -20,7 +20,7 @@ const defaultBanners = [
     description: "Discover Our Range of Body Treatment Products",
     cta: "Explore More",
     image:
-      "https://5.imimg.com/data5/SELLER/Default/2023/9/341105361/VW/HK/HH/157670502/body-lotion-for-dry-skin-500x500.jpg",
+      "/images/c2.jpg",
     textColor: "text-white",
   },
   {
@@ -29,7 +29,7 @@ const defaultBanners = [
     subtitle: "LIMITED TIME",
     description: "Professional Body Care Solutions",
     cta: "Shop Collection",
-    image: "https://images.meesho.com/images/products/452073496/9jhlf_512.webp",
+    image: "/images/c3.jpg",
     textColor: "text-white",
   },
 ];
@@ -73,18 +73,19 @@ const Banner = ({ banners = defaultBanners }) => {
       <div className="relative h-full">
         {banners.map((banner, index) => (
           <div
-            key={banner.id}
-            className={`absolute inset-0 transition-all duration-1000 ease-in-out
+          key={banner.id}
+          className={`absolute inset-0 transition-all duration-1000 ease-in-out
               ${
                 currentBanner === index
                   ? "opacity-100 translate-x-0"
                   : index < currentBanner
                   ? "opacity-0 -translate-x-full"
                   : "opacity-0 translate-x-full"
-              }`}
-            aria-hidden={currentBanner !== index}
-          >
+                }`}
+                aria-hidden={currentBanner !== index}
+                >
             {/* Background Image */}
+                <div className="absolute h-full w-full top-0 left-0 bg-black/30 z-[99]"></div>
             <img
               src={banner.image}
               alt=""
@@ -99,7 +100,7 @@ const Banner = ({ banners = defaultBanners }) => {
             />
 
             {/* Content Layer */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="absolute z-[999] inset-0 flex items-center justify-center pointer-events-none">
               <div className="text-center px-4 max-w-5xl mx-auto">
                 <h1
                   className={`text-4xl md:text-6xl lg:text-7xl font-bold mb-6 
