@@ -46,8 +46,8 @@ const SignupForm = () => {
             <div className="flex justify-center mb-8">
               <Link href="/" className="relative">
                 <img
-                  src="/logo.avif"
-                  alt="COSMO PROF"
+              src="/favicon.ico"
+              alt="COSMO PROF"
                   className="h-10 w-auto object-contain rounded-sm" // added rounded-full for circular shape
                 />
               </Link>

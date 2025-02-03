@@ -191,7 +191,7 @@ const Navbar = () => {
             aria-label="Home"
           >
             <img
-              src="/logo.avif"
+              src="/favicon.ico"
               alt="COSMO PROF"
               className="h-8 w-auto object-contain transition-transform hover:scale-105"
               loading="eager"

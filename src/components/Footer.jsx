@@ -100,8 +100,8 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <Link href="/" className="block mb-6">
               <img
-                src="/logo.avif"
-                alt="COSMO PROF"
+              src="/favicon.ico"
+              alt="COSMO PROF"
                 className="h-12 w-auto object-contain"
               />
             </Link>
