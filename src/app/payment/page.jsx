@@ -130,7 +130,7 @@ const PaymentPage = () => {
                     >
                       <div className="relative">
                         <img
-                          src={item.image}
+                          src={item.images[0]?.url}
                           alt={item.name}
                           className="w-16 h-16 object-cover rounded-md"
                         />

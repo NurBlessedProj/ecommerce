@@ -358,7 +358,7 @@ const CheckoutPage = () => {
                   <div key={item.id} className="flex items-start space-x-4">
                     <div className="relative w-20 h-20 rounded-md overflow-hidden">
                       <img
-                        src={item.image}
+                        src={item.images[0]?.url}
                         alt={item.name}
                         className="w-full h-full object-cover"
                       />
