@@ -20,12 +20,12 @@ const Navbar = () => {
             </Link>
           </div>
           <div className="flex items-center space-x-4">
-            <Link
+            {/* <Link
               href="/admin/dashboard"
               className="text-gray-600 hover:text-blue-600"
             >
               <Settings className="h-5 w-5" />
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>

@@ -360,7 +360,7 @@ export default function ProductDetails({ params }) {
                     <div className="bg-white rounded-md sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
                       <div className="relative aspect-square">
                         <Image
-                          src={product.image}
+                          src={product.images[0]?.url}
                           alt={product.name}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"

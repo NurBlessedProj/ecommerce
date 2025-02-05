@@ -41,20 +41,17 @@ const SignupForm = () => {
     }
 
     try {
-      const response = await fetch(
-        "https://itapole-backend.onrender.com/api/auth/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: formData.name,
-            email: formData.email,
-            password: formData.password,
-          }),
-        }
-      );
+      const response = await fetch("https://itapole-backend.onrender.com/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
       const data = await response.json();
       if (response.ok) {
         toast.success(data.message);
