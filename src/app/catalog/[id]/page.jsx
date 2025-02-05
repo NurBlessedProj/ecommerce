@@ -25,7 +25,7 @@ export default function ProductDetails({ params }) {
   const productsPerPage = 4;
   const router = useRouter();
   const { addToCart } = useCart();
-  const API_URL = "http://localhost:5000/api";
+  const API_URL = "https://itapole-backend.onrender.com/api";
 
   const handleAddToCart = () => {
     if (!user) {

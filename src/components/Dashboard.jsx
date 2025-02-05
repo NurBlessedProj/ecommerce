@@ -38,7 +38,7 @@ const Dashboard = () => {
     }
   };
 
-  const API_URL = "http://localhost:5000/api";
+  const API_URL = "https://itapole-backend.onrender.com/api";
 
   // Fetch products
   const fetchProducts = async () => {

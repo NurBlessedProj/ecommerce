@@ -42,8 +42,8 @@ const CatalogContent = () => {
     brand: "all",
     sortBy: "newest",
   });
-  
-  const API_URL = "http://localhost:5000/api";
+
+  const API_URL = "https://itapole-backend.onrender.com/api";
 
   const fetchProducts = async () => {
     try {
