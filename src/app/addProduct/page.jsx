@@ -93,7 +93,7 @@ const AddProductPage = ({ editingProduct, onSave, onCancel }) => {
             onChange={(e) =>
               setProductData({ ...productData, name: e.target.value })
             }
-            className={`block w-full rounded-lg border ${
+            className={`block w-full rounded-md border ${
               errors.name ? "border-red-500" : "border-gray-300"
             } px-4 py-3 focus:border-blue-500 focus:ring-blue-500`}
             placeholder="Enter product name"
@@ -113,7 +113,7 @@ const AddProductPage = ({ editingProduct, onSave, onCancel }) => {
             onChange={(e) =>
               setProductData({ ...productData, category: e.target.value })
             }
-            className={`block w-full rounded-lg border ${
+            className={`block w-full rounded-md border ${
               errors.category ? "border-red-500" : "border-gray-300"
             } px-4 py-3 focus:border-blue-500 focus:ring-blue-500`}
           >
@@ -143,7 +143,7 @@ const AddProductPage = ({ editingProduct, onSave, onCancel }) => {
               })
             }
             rows={4}
-            className="block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
+            className="block w-full rounded-md border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
             placeholder="Enter product description"
           />
         </div>
@@ -163,7 +163,7 @@ const AddProductPage = ({ editingProduct, onSave, onCancel }) => {
               onChange={(e) =>
                 setProductData({ ...productData, price: e.target.value })
               }
-              className={`block w-full rounded-lg border ${
+              className={`block w-full rounded-md border ${
                 errors.price ? "border-red-500" : "border-gray-300"
               } pl-7 pr-4 py-3 focus:border-blue-500 focus:ring-blue-500`}
               placeholder="0.00"
@@ -184,7 +184,7 @@ const AddProductPage = ({ editingProduct, onSave, onCancel }) => {
             {productData.images.map((image, index) => (
               <div
                 key={index}
-                className="relative aspect-square rounded-lg overflow-hidden group"
+                className="relative aspect-square rounded-md overflow-hidden group"
               >
                 <Image
                   src={image.url}
@@ -201,7 +201,7 @@ const AddProductPage = ({ editingProduct, onSave, onCancel }) => {
                 </button>
               </div>
             ))}
-            <label className="relative aspect-square rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors cursor-pointer flex items-center justify-center">
+            <label className="relative aspect-square rounded-md border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors cursor-pointer flex items-center justify-center">
               <input
                 type="file"
                 multiple
@@ -227,14 +227,14 @@ const AddProductPage = ({ editingProduct, onSave, onCancel }) => {
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {loading ? (
               <>

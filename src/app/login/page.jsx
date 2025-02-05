@@ -1,49 +1,120 @@
-'use client'
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { ArrowRight, Mail, Lock, ShoppingBag, Eye, EyeOff } from 'lucide-react';
-import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+"use client";
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ArrowRight, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { useUser } from "@/context/user";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+const SimpleNavbar = () => (
+  <nav className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-100">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex justify-between items-center h-16">
+        <Link href="/" className="flex items-center space-x-2">
+          <img
+            src="/favicon.ico"
+            alt="COSMO PROF"
+            className="h-8 w-auto object-contain"
+          />
+        </Link>
+        <Link
+          href="/"
+          className="flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Home
+        </Link>
+      </div>
+    </div>
+  </nav>
+);
+
+const SimpleFooter = () => (
+  <footer className="bg-white border-t border-gray-100 py-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center text-sm text-gray-500">
+        <p>
+          &copy; {new Date().getFullYear()} COSMO PROF. All rights reserved.
+        </p>
+        <div className="mt-2 space-x-4">
+          <Link
+            href="/privacy"
+            className="hover:text-gray-900 transition-colors"
+          >
+            Privacy Policy
+          </Link>
+          <span>•</span>
+          <Link href="/terms" className="hover:text-gray-900 transition-colors">
+            Terms of Service
+          </Link>
+        </div>
+      </div>
+    </div>
+  </footer>
+);
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useUser();
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login form submitted:', formData);
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        login(data.user); // Save user data in context
+        toast.success("Successfully logged in!");
+        router.push("/"); // Redirect to home page
+      } else {
+        toast.error(data.message || "Login failed");
+      }
+    } catch (error) {
+      toast.error("An error occurred during login");
+      console.error("Login error:", error);
+    }
   };
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   return (
     <>
-      <Navbar />
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 pt-20">
+      <SimpleNavbar />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
         <Card className="max-w-md w-full backdrop-blur-sm bg-white/80 shadow-xl hover:shadow-2xl transition-all duration-300">
           <CardContent className="pt-8">
             <div className="flex justify-center mb-8">
-            <Link href="/" className="relative">
-            <img
-              src="/favicon.ico"
-              alt="COSMO PROF"
-              className="h-10 w-auto object-contain rounded-sm" // added rounded-full for circular shape
-            />
-          </Link>
+              <Link href="/" className="relative">
+                <img
+                  src="/favicon.ico"
+                  alt="COSMO PROF"
+                  className="h-10 w-auto object-contain rounded-sm"
+                />
+              </Link>
             </div>
-            
+
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-gray-900 transition-all duration-300">
                 Welcome back!
@@ -55,7 +126,9 @@ const LoginForm = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700">Email</Label>
+                <Label htmlFor="email" className="text-gray-700">
+                  Email
+                </Label>
                 <div className="relative group">
                   <Input
                     id="email"
@@ -72,7 +145,9 @@ const LoginForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700">Password</Label>
+                <Label htmlFor="password" className="text-gray-700">
+                  Password
+                </Label>
                 <div className="relative group">
                   <Input
                     id="password"
@@ -99,8 +174,8 @@ const LoginForm = () => {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-blue-600 hover:bg-gray-800 text-white transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-lg"
               >
                 Sign in
@@ -119,7 +194,7 @@ const LoginForm = () => {
           </CardContent>
         </Card>
       </div>
-      <Footer />
+      <SimpleFooter />
     </>
   );
 };

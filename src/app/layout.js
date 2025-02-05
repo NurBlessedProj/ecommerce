@@ -4,6 +4,8 @@ import "./globals.css";
 import { CartProvider } from "@/context/cart"; // Update the import
 import { SearchProvider } from "@/context/search"; // Add this import
 import { Toaster } from "sonner";
+import { UserProvider } from "@/context/user";
+import { AuthProvider } from "@/context/auth";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -23,13 +25,17 @@ export default function RootLayout({ children }) {
       <body className={`${montserrat.variable} font-sans antialiased`}>
         <SearchProvider>
           <CartProvider>
-            <Toaster richColors position="top-right" expand />
-            {children}
+            <UserProvider>
+              <AuthProvider>
+                <Toaster richColors position="top-right" expand />
+                {children}
 
-            <script
-              src="//code.tidio.co/zxjsknngtt4kdpz7oplu3hqihnabniqr.js"
-              async
-            ></script>
+                <script
+                  src="//code.tidio.co/zxjsknngtt4kdpz7oplu3hqihnabniqr.js"
+                  async
+                ></script>
+              </AuthProvider>
+            </UserProvider>
           </CartProvider>
         </SearchProvider>
       </body>

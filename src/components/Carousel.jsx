@@ -1,11 +1,11 @@
 // components/ProductCarousel.jsx
-"use client"
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
+"use client";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
 
 const ProductCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  
+
   const slides = [
     {
       title: "BIG BOTTLE SALE",
@@ -16,7 +16,7 @@ const ProductCarousel = () => {
         "/images/product2.jpg",
         "/images/product3.jpg",
         "/images/product4.jpg",
-      ]
+      ],
     },
     {
       title: "BIG BOTTLE SALE",
@@ -27,7 +27,7 @@ const ProductCarousel = () => {
         "/images/product2.jpg",
         "/images/product3.jpg",
         "/images/product4.jpg",
-      ]
+      ],
     },
     {
       title: "BIG BOTTLE SALE",
@@ -38,7 +38,7 @@ const ProductCarousel = () => {
         "/images/product2.jpg",
         "/images/product3.jpg",
         "/images/product4.jpg",
-      ]
+      ],
     },
     {
       title: "BIG BOTTLE SALE",
@@ -49,7 +49,7 @@ const ProductCarousel = () => {
         "/images/product2.jpg",
         "/images/product3.jpg",
         "/images/product4.jpg",
-      ]
+      ],
     },
     {
       title: "BIG BOTTLE SALE",
@@ -60,15 +60,13 @@ const ProductCarousel = () => {
         "/images/product2.jpg",
         "/images/product3.jpg",
         "/images/product4.jpg",
-      ]
+      ],
     },
   ];
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => 
-        prev === slides.length - 1 ? 0 : prev + 1
-      );
+      setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
     }, 5000);
 
     return () => clearInterval(timer);
@@ -90,12 +88,12 @@ const ProductCarousel = () => {
               Shop Now
             </button>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             {slides[currentSlide].products.map((product, index) => (
-              <div 
+              <div
                 key={index}
-                className="aspect-square bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform"
+                className="aspect-square bg-white rounded-md shadow-md overflow-hidden transform hover:scale-105 transition-transform"
               >
                 <div className="w-full h-full relative">
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-100" />
@@ -107,14 +105,18 @@ const ProductCarousel = () => {
       </div>
 
       {/* Navigation Arrows */}
-      <button 
-        onClick={() => setCurrentSlide(prev => prev === 0 ? slides.length - 1 : prev - 1)}
+      <button
+        onClick={() =>
+          setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1))
+        }
         className="absolute left-8 md:left-12 lg:left-24 top-1/2 transform -translate-y-1/2 bg-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
       >
         ‹
       </button>
-      <button 
-        onClick={() => setCurrentSlide(prev => prev === slides.length - 1 ? 0 : prev + 1)}
+      <button
+        onClick={() =>
+          setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1))
+        }
         className="absolute right-8 md:right-12 lg:right-24 top-1/2 transform -translate-y-1/2 bg-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
       >
         ›
@@ -127,7 +129,7 @@ const ProductCarousel = () => {
             key={index}
             onClick={() => setCurrentSlide(index)}
             className={`w-3 h-3 rounded-full transition-colors ${
-              currentSlide === index ? 'bg-black' : 'bg-gray-300'
+              currentSlide === index ? "bg-black" : "bg-gray-300"
             }`}
           />
         ))}

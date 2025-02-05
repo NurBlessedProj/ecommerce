@@ -25,7 +25,7 @@ export default function CartPage() {
           </p>
           <Link
             href="/catalog"
-            className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             Continue Shopping
           </Link>
@@ -47,7 +47,7 @@ export default function CartPage() {
             {cart.map((item) => (
               <div
                 key={`${item.id}-${item.size}`}
-                className="flex gap-4 p-4 border rounded-lg"
+                className="flex gap-4 p-4 border rounded-md"
               >
                 <div className="relative w-24 h-24">
                   <Image
@@ -104,7 +104,7 @@ export default function CartPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="sticky top-4 p-6 border rounded-lg">
+            <div className="sticky top-4 p-6 border rounded-md">
               <h2 className="text-xl font-bold mb-4">Order Summary</h2>
 
               <div className="space-y-2 mb-4">
@@ -128,7 +128,7 @@ export default function CartPage() {
                 onClick={() => {
                   window.location.href = "/checkout";
                 }}
-                className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
                 Proceed to Checkout
               </button>

@@ -2,43 +2,91 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Minus, Plus, ZoomIn, ChevronLeft, ChevronRight } from "lucide-react";
-import { productData } from "../../../../products";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { useCart } from "@/context/cart";
+import { useUser } from "@/context/user";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function ProductDetails({ params }) {
+  const { user } = useUser();
   const [productDetails, setProductDetails] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [isZoomed, setIsZoomed] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [quantity, setQuantity] = useState(1);
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [images, setImages] = useState([]);
+
   const productsPerPage = 4;
-  const router = useRouter(); // Add this
+  const router = useRouter();
   const { addToCart } = useCart();
+  const API_URL = "http://localhost:5000/api";
 
   const handleAddToCart = () => {
+    if (!user) {
+      // Redirect to login page if not logged in
+      router.push("/login");
+      return;
+    }
     addToCart(productDetails, quantity);
+    toast.success("Product added to cart");
   };
 
-  // Add handler for Pay Now
   const handlePayNow = () => {
+    if (!user) {
+      // Redirect to login page if not logged in
+      router.push("/login");
+      return;
+    }
     addToCart(productDetails, quantity);
     router.push("/checkout");
   };
-
+  // Fetch single product and set up related products
   useEffect(() => {
-    const product = productData.find((p) => p.id === parseInt(params.id));
-    setProductDetails(product);
+    const fetchProductAndRelated = async () => {
+      try {
+        setLoading(true);
+        // Fetch the specific product
+        const response = await fetch(`${API_URL}/products/${params.id}`);
+        const data = await response.json();
 
-    if (product) {
-      const related = productData.filter(
-        (p) => p.category === product.category && p.id !== product.id
-      );
-      setRelatedProducts(related);
+        if (data.success) {
+          setProductDetails(data.data);
+          // Set up images array from product data
+          const productImages = data.data.images || [];
+          setImages(
+            productImages.length > 0
+              ? productImages
+              : [{ url: data.data.image }]
+          );
+
+          // Fetch all products to find related ones
+          const allProductsResponse = await fetch(`${API_URL}/products`);
+          const allProductsData = await allProductsResponse.json();
+
+          if (allProductsData.success) {
+            // Filter related products (same category, different ID)
+            const related = allProductsData.data.filter(
+              (p) =>
+                p.category === data.data.category && p._id !== data.data._id
+            );
+            setRelatedProducts(related);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.id) {
+      fetchProductAndRelated();
     }
   }, [params.id]);
 
@@ -49,6 +97,21 @@ export default function ProductDetails({ params }) {
     const x = ((e.clientX - left) / width) * 100;
     const y = ((e.clientY - top) / height) * 100;
     setMousePosition({ x, y });
+  };
+
+  const handleThumbnailClick = (index) => {
+    setSelectedImageIndex(index);
+    setIsZoomed(false);
+  };
+
+  const handlePrevImage = () => {
+    setSelectedImageIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+    setIsZoomed(false);
+  };
+
+  const handleNextImage = () => {
+    setSelectedImageIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+    setIsZoomed(false);
   };
 
   const handleQuantityChange = (value) => {
@@ -68,12 +131,13 @@ export default function ProductDetails({ params }) {
     setCurrentPage((prev) => Math.max(0, prev - 1));
   };
 
-  if (!productDetails)
+  if (loading || !productDetails) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
       </div>
     );
+  }
 
   const displayedProducts = relatedProducts.slice(
     currentPage * productsPerPage,
@@ -101,7 +165,7 @@ export default function ProductDetails({ params }) {
                   href="/catalog"
                   className="text-gray-500 hover:text-gray-700"
                 >
-                  Catalogof
+                  Catalog
                 </Link>
               </li>
               <li>
@@ -114,16 +178,17 @@ export default function ProductDetails({ params }) {
           </nav>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
-            {/* Product Image */}
-            <div className="lg:sticky lg:top-24">
+            {/* Product Images Section */}
+            <div className="lg:sticky lg:top-24 space-y-4">
+              {/* Main Image */}
               <div
-                className="relative aspect-square rounded-lg sm:rounded-2xl overflow-hidden bg-white shadow-lg"
+                className="relative aspect-square rounded-md sm:rounded-2xl overflow-hidden bg-white shadow-lg"
                 onMouseEnter={() => setIsZoomed(true)}
                 onMouseLeave={() => setIsZoomed(false)}
                 onMouseMove={handleMouseMove}
               >
                 <Image
-                  src={productDetails.image}
+                  src={images[selectedImageIndex].url}
                   alt={productDetails.name}
                   fill
                   className={`object-cover transition-transform duration-200`}
@@ -133,13 +198,54 @@ export default function ProductDetails({ params }) {
                   }}
                 />
                 {!isZoomed && (
-                  <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-black/50 p-1.5 sm:p-2 rounded-full">
-                    <ZoomIn className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-                  </div>
+                  <>
+                    <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-black/50 p-1.5 sm:p-2 rounded-full">
+                      <ZoomIn className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    {images.length > 1 && (
+                      <div className="absolute inset-0 flex items-center justify-between p-4">
+                        <button
+                          onClick={handlePrevImage}
+                          className="p-2 rounded-full bg-black/50 text-white hover:bg-black/70"
+                        >
+                          <ChevronLeft className="w-6 h-6" />
+                        </button>
+                        <button
+                          onClick={handleNextImage}
+                          className="p-2 rounded-full bg-black/50 text-white hover:bg-black/70"
+                        >
+                          <ChevronRight className="w-6 h-6" />
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
-            </div>
 
+              {/* Thumbnail Gallery */}
+              {images.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {images.map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleThumbnailClick(index)}
+                      className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden ${
+                        selectedImageIndex === index
+                          ? "ring-2 ring-blue-600"
+                          : "ring-1 ring-gray-200"
+                      }`}
+                    >
+                      <Image
+                        src={image.url}
+                        alt={`Product thumbnail ${index + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             {/* Product Info */}
             <div className="space-y-4 sm:space-y-6 lg:space-y-8">
               <div>
@@ -152,10 +258,10 @@ export default function ProductDetails({ params }) {
               </div>
 
               {/* Quantity Selector */}
-              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+              <div className="bg-white p-4 sm:p-6 rounded-md shadow-sm">
                 <div className="flex items-center gap-4">
                   <span className="text-gray-700 font-medium">Quantity:</span>
-                  <div className="flex items-center border rounded-lg">
+                  <div className="flex items-center border rounded-md">
                     <button
                       onClick={() => handleQuantityChange(quantity - 1)}
                       className="p-2 sm:p-3 hover:bg-gray-50 disabled:opacity-50"
@@ -188,20 +294,20 @@ export default function ProductDetails({ params }) {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button
                   onClick={handleAddToCart}
-                  className="flex-1 bg-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl text-sm sm:text-base"
+                  className="flex-1 bg-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-md font-medium hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl text-sm sm:text-base"
                 >
                   Add to Cart
                 </button>
                 <button
                   onClick={handlePayNow}
-                  className="flex-1 bg-black text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors shadow-lg hover:shadow-xl text-sm sm:text-base"
+                  className="flex-1 bg-black text-white px-6 sm:px-8 py-3 sm:py-4 rounded-md font-medium hover:bg-gray-800 transition-colors shadow-lg hover:shadow-xl text-sm sm:text-base"
                 >
                   Pay Now
                 </button>
               </div>
 
               {/* Description */}
-              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+              <div className="bg-white p-4 sm:p-6 rounded-md shadow-sm">
                 <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
                   Description
                 </h3>
@@ -251,7 +357,7 @@ export default function ProductDetails({ params }) {
                     key={product.id}
                     className="group"
                   >
-                    <div className="bg-white rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+                    <div className="bg-white rounded-md sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
                       <div className="relative aspect-square">
                         <Image
                           src={product.image}

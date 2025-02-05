@@ -4,6 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/cart";
 import { productData } from "../../products";
+import { useUser } from "@/context/user";
+
+// Add to the existing imports and hooks
 import {
   Search,
   ShoppingBag,
@@ -12,6 +15,8 @@ import {
   LogIn,
   Menu,
   X,
+  User,
+  LogOut,
 } from "lucide-react";
 
 const SearchBar = memo(
@@ -61,7 +66,7 @@ const SearchBar = memo(
           }}
           placeholder="Search products..."
           className={`w-full px-4 ${isMobile ? "py-3" : "py-2"} pr-12 text-sm
-          bg-gray-50 border border-gray-200 rounded-md
+          bg-gray-50 border border-gray-200 rounded-sm
           transition-all duration-300 outline-none
           ${
             isSearchFocused
@@ -81,7 +86,7 @@ const SearchBar = memo(
       </div>
 
       {showSuggestions && searchQuery && (
-        <div className="absolute z-50 w-full mt-2 bg-white rounded-lg shadow-xl border border-gray-100 max-h-[60vh] overflow-y-auto">
+        <div className="absolute z-50 w-full mt-2 bg-white rounded-sm shadow-xl border border-gray-100 max-h-[60vh] overflow-y-auto">
           {filteredProducts.length > 0 ? (
             <div className="py-2">
               {filteredProducts.map((product) => (
@@ -95,7 +100,7 @@ const SearchBar = memo(
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  <div className="relative w-12 h-12 rounded-md overflow-hidden bg-gray-100">
+                  <div className="relative w-12 h-12 rounded-sm overflow-hidden bg-gray-100">
                     <Image
                       src={product.image}
                       alt={product.name}
@@ -125,6 +130,13 @@ const SearchBar = memo(
     </div>
   )
 );
+const UserAvatar = ({ username, size = "w-8 h-8" }) => (
+  <div
+    className={`${size} rounded-full bg-blue-600 flex items-center justify-center text-white font-medium`}
+  >
+    {username ? username[0].toUpperCase() : "U"}
+  </div>
+);
 
 const Navbar = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -134,6 +146,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const { user, logout } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -142,6 +155,7 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+  console.log(user);
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -228,22 +242,48 @@ const Navbar = () => {
               </Link>
             ))}
 
-            <Link
-              href="/login"
-              className="flex items-center text-sm gap-2 px-4 py-2
-                bg-blue-600 text-white hover:bg-blue-700 transition-colors rounded-md
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-            >
-              <LogIn
-                size={20}
-                className="group-hover:translate-x-1 transition-transform duration-300"
-              />
-              <span>Log In</span>
-            </Link>
+            {user ? (
+              <div className="relative group">
+                <button
+                  className="flex items-center text-sm gap-2 p-1.5
+        hover:bg-gray-100 transition-colors rounded-full
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                >
+                  <UserAvatar username={user.username} />
+                </button>
+                <div className="absolute right-0  w-48 bg-white rounded-sm shadow-lg border border-gray-100 invisible group-hover:visible">
+                  <div className="py-1">
+                    <div className="px-4 py-2 text-sm text-gray-500 border-b border-gray-100">
+                      Signed in as{" "}
+                      <span className="font-medium text-gray-900">
+                        {user.username}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={logout}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center text-sm gap-2 px-4 py-2
+    bg-blue-600 text-white hover:bg-blue-700 transition-colors rounded-sm
+    focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              >
+                <LogIn size={20} />
+                <span>Log In</span>
+              </Link>
+            )}
 
             <Link
               href="/cart"
-              className="relative p-2 hover:bg-gray-100 rounded-md transition-colors
+              className="relative p-2 hover:bg-gray-100 rounded-sm transition-colors
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               aria-label={`Cart with ${cartCount} items`}
             >
@@ -261,7 +301,7 @@ const Navbar = () => {
           <div className="md:hidden flex items-center gap-3">
             <Link
               href="/cart"
-              className="relative p-2 hover:bg-gray-100 rounded-md transition-colors
+              className="relative p-2 hover:bg-gray-100 rounded-sm transition-colors
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               aria-label={`Cart with ${cartCount} items`}
             >
@@ -276,7 +316,7 @@ const Navbar = () => {
               )}
             </Link>
             <button
-              className="p-2 hover:bg-gray-100 rounded-md transition-colors
+              className="p-2 hover:bg-gray-100 rounded-sm transition-colors
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-expanded={isMobileMenuOpen}
@@ -305,7 +345,7 @@ const Navbar = () => {
                 <div className="flex items-center gap-3">
                   <Link
                     href="/cart"
-                    className="relative p-2 hover:bg-gray-100 rounded-md transition-colors
+                    className="relative p-2 hover:bg-gray-100 rounded-sm transition-colors
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     aria-label={`Cart with ${cartCount} items`}
                   >
@@ -321,7 +361,7 @@ const Navbar = () => {
                   </Link>
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                    className="p-2 hover:bg-gray-100 rounded-sm transition-colors"
                     aria-label="Close menu"
                   >
                     <X size={24} />
@@ -342,10 +382,18 @@ const Navbar = () => {
               />
 
               <nav className="flex flex-col">
+                {user && (
+                  <div className="flex items-center gap-3 p-4 border-b border-gray-100">
+                    <UserAvatar username={user.username} size="w-10 h-10" />
+                    <div>
+                      <div className="font-medium">{user.username}</div>
+                      <div className="text-sm text-gray-500">{user.email}</div>
+                    </div>
+                  </div>
+                )}
                 {[
                   { href: "/catalog", icon: Grid, label: "Catalog" },
                   { href: "/contact", icon: MessageCircle, label: "Contact" },
-                  { href: "/login", icon: LogIn, label: "Log In" },
                 ].map(({ href, icon: Icon, label }) => (
                   <Link
                     key={href}
@@ -358,6 +406,31 @@ const Navbar = () => {
                     <span>{label}</span>
                   </Link>
                 ))}
+                {user ? (
+                  <>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="flex items-center text-lg text-gray-700 hover:text-blue-600 
+      transition-colors gap-3 p-4 border-b border-gray-100 hover:bg-gray-50 w-full"
+                    >
+                      <LogOut size={24} />
+                      <span>Logout</span>
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="flex items-center text-lg text-gray-700 hover:text-blue-600 
+    transition-colors gap-3 p-4 border-b border-gray-100 hover:bg-gray-50"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <LogIn size={24} />
+                    <span>Log In</span>
+                  </Link>
+                )}
               </nav>
             </div>
           </div>

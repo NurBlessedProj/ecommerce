@@ -1,8 +1,23 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { Heart, Eye, ArrowRight, Users, Package, TrendingUp, Truck } from 'lucide-react';
+import Image from "next/image";
+import Link from "next/link";
+import {
+  Heart,
+  Eye,
+  ArrowRight,
+  Users,
+  Package,
+  TrendingUp,
+  Truck,
+} from "lucide-react";
 
-const TrendingSection = ({ categories, trendingItems, bottomBanners, activeCategory, setActiveCategory, router }) => {
+const TrendingSection = ({
+  categories,
+  trendingItems,
+  bottomBanners,
+  activeCategory,
+  setActiveCategory,
+  router,
+}) => {
   return (
     <div className="container max-w-[1350px] mx-auto px-4 py-8">
       {/* Main Header */}
@@ -10,11 +25,10 @@ const TrendingSection = ({ categories, trendingItems, bottomBanners, activeCateg
         <span className="text-blue-600 text-xs md:text-sm font-medium tracking-wider uppercase block mb-2">
           Discover What's Hot
         </span>
-        <h2 className="text-2xl md:text-3xl font-bold mb-3">
-          Trending Now
-        </h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-3">Trending Now</h2>
         <p className="text-gray-600 text-sm md:text-base max-w-2xl mx-auto">
-          Get inspired with must-have products and exclusive sales events curated just for you
+          Get inspired with must-have products and exclusive sales events
+          curated just for you
         </p>
       </div>
 
@@ -25,9 +39,10 @@ const TrendingSection = ({ categories, trendingItems, bottomBanners, activeCateg
             <button
               key={category.id}
               className={`flex-none px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap
-                ${activeCategory === category.id
-                  ? "bg-black text-white"
-                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                ${
+                  activeCategory === category.id
+                    ? "bg-black text-white"
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                 }`}
               onClick={() => setActiveCategory(category.id)}
             >
@@ -43,7 +58,7 @@ const TrendingSection = ({ categories, trendingItems, bottomBanners, activeCateg
           <div key={item.id} className="group">
             <div
               onClick={() => router.push("/catalog")}
-              className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-100"
+              className="relative aspect-[3/4] rounded-md overflow-hidden bg-gray-100"
             >
               <Image
                 src={item.image}
@@ -56,10 +71,10 @@ const TrendingSection = ({ categories, trendingItems, bottomBanners, activeCateg
               {/* Overlay with Quick Actions */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300">
                 <div className="absolute bottom-3 left-0 right-0 flex justify-center space-x-2 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                  <button className="p-2 bg-white/95 rounded-lg shadow-lg hover:bg-white transition-colors">
+                  <button className="p-2 bg-white/95 rounded-md shadow-lg hover:bg-white transition-colors">
                     <Heart className="w-4 h-4 text-gray-700" />
                   </button>
-                  <button className="p-2 bg-white/95 rounded-lg shadow-lg hover:bg-white transition-colors">
+                  <button className="p-2 bg-white/95 rounded-md shadow-lg hover:bg-white transition-colors">
                     <Eye className="w-4 h-4 text-gray-700" />
                   </button>
                 </div>
@@ -99,7 +114,7 @@ const TrendingSection = ({ categories, trendingItems, bottomBanners, activeCateg
           {bottomBanners.map((banner) => (
             <div
               key={banner.title}
-              className="group relative aspect-video rounded-lg overflow-hidden"
+              className="group relative aspect-video rounded-md overflow-hidden"
             >
               <Image
                 src={banner.image}
@@ -123,7 +138,7 @@ const TrendingSection = ({ categories, trendingItems, bottomBanners, activeCateg
                   )}
                   <button
                     onClick={() => router.push("/catalog")}
-                    className="mt-4 px-4 py-2 bg-white/90 rounded-lg text-sm font-medium hover:bg-white transition-colors inline-flex items-center gap-2"
+                    className="mt-4 px-4 py-2 bg-white/90 rounded-md text-sm font-medium hover:bg-white transition-colors inline-flex items-center gap-2"
                   >
                     Shop Now
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -148,9 +163,7 @@ const TrendingSection = ({ categories, trendingItems, bottomBanners, activeCateg
               <stat.icon className="w-6 h-6" />
             </div>
             <h4 className="text-lg md:text-2xl font-bold">{stat.title}</h4>
-            <p className="text-gray-600 text-sm mt-1">
-              {stat.subtitle}
-            </p>
+            <p className="text-gray-600 text-sm mt-1">{stat.subtitle}</p>
           </div>
         ))}
       </div>
@@ -158,7 +171,7 @@ const TrendingSection = ({ categories, trendingItems, bottomBanners, activeCateg
       {/* View More Button */}
       <div className="flex justify-center mt-12">
         <Link href="/catalog">
-          <button className="group bg-black text-white px-8 py-3 rounded-lg transition-all hover:bg-gray-900 inline-flex items-center gap-2">
+          <button className="group bg-black text-white px-8 py-3 rounded-md transition-all hover:bg-gray-900 inline-flex items-center gap-2">
             <span className="text-base font-medium">View Full Catalog</span>
             <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
           </button>

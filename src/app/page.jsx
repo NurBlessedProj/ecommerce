@@ -29,14 +29,17 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Banner from "@/components/Banner";
 import Image from "next/image";
-import { productData as products } from "../../products";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import TrendingSection from "@/components/TrendingSection";
+import { useUser } from "@/context/user";
 
 export default function Home() {
   // Initialize all state variables first
   const [currentBanner, setCurrentBanner] = useState(0);
+  const { addToCart } = useCart();
+  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState([]);
   const [currentProduct, setCurrentProduct] = useState(0);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isMobile, setIsMobile] = useState(true); // Default to mobile to prevent layout shift
@@ -56,6 +59,8 @@ export default function Home() {
       setCurrentTestimonial((prev) => (prev >= maxSlides ? 0 : prev + 1));
     }
   };
+
+  const { user } = useUser();
 
   const bottomBanners = [
     {
@@ -324,6 +329,27 @@ export default function Home() {
     // Cleanup
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const API_URL = "http://localhost:5000/api";
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/products`);
+      const data = await response.json();
+      if (data.success) {
+        setProducts(data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   // Add this function for product slides
   const handleSlide = (direction) => {
     if (direction === "prev" && currentProduct > 0) {
@@ -372,13 +398,17 @@ export default function Home() {
                   const { addToCart } = useCart();
 
                   const handleAddToCart = () => {
-                    addToCart(product, 1);
-                    toast.success(`${product.name} added to cart`);
+                    if (!user) {
+                      router.push("/login");
+                      return;
+                    }
+                    addToCart(product);
+                    toast.success("Product added to cart!");
                   };
 
                   return (
                     <div
-                      key={product.id}
+                      key={product._id}
                       style={{
                         minWidth: `${100 / displayCount.products}%`,
                       }}
@@ -389,7 +419,7 @@ export default function Home() {
                           {/* Image Section */}
                           <div className="relative aspect-[3/4] overflow-hidden bg-gray-50">
                             <img
-                              src={product.image}
+                              src={product.images[0]?.url}
                               alt={product.name}
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
@@ -400,18 +430,15 @@ export default function Home() {
                                 <div className="flex justify-center space-x-2 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-300">
                                   <button
                                     onClick={() =>
-                                      router.push(`/catalog/${product.id}`)
+                                      router.push(`/catalog/${product._id}`)
                                     }
-                                    className="p-2 sm:p-3 bg-white/95 rounded-lg sm:rounded-xl shadow-lg hover:bg-white transition-colors backdrop-blur-sm"
+                                    className="p-2 sm:p-3 bg-white/95 rounded-md sm:rounded-xl shadow-lg hover:bg-white transition-colors backdrop-blur-sm"
                                   >
                                     <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
                                   </button>
-                                  <button className="p-2 sm:p-3 bg-white/95 rounded-lg sm:rounded-xl shadow-lg hover:bg-white transition-colors backdrop-blur-sm">
-                                    <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
-                                  </button>
                                   <button
                                     onClick={handleAddToCart}
-                                    className="p-2 sm:p-3 bg-white/95 rounded-lg sm:rounded-xl shadow-lg hover:bg-white transition-colors backdrop-blur-sm"
+                                    className="p-2 sm:p-3 bg-white/95 rounded-md sm:rounded-xl shadow-lg hover:bg-white transition-colors backdrop-blur-sm"
                                   >
                                     <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
                                   </button>
@@ -422,12 +449,12 @@ export default function Home() {
                             {/* Badges remain the same */}
                             <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 flex justify-between items-start">
                               {product.badge && (
-                                <div className="bg-black/85 backdrop-blur-sm text-white text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg">
+                                <div className="bg-black/85 backdrop-blur-sm text-white text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-md">
                                   {product.badge}
                                 </div>
                               )}
                               {product.discount && (
-                                <div className="bg-red-500 text-white text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg">
+                                <div className="bg-red-500 text-white text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-md">
                                   -{product.discount}%
                                 </div>
                               )}
@@ -441,19 +468,12 @@ export default function Home() {
                               <span className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider">
                                 {product.category}
                               </span>
-                              {product.brand && (
-                                <img
-                                  src={product.brand}
-                                  alt="Brand"
-                                  className="h-3 sm:h-4 object-contain"
-                                />
-                              )}
                             </div>
 
                             {/* Title */}
                             <h3
                               onClick={() =>
-                                router.push(`/catalog/${product.id}`)
+                                router.push(`/catalog/${product._id}`)
                               }
                               className="font-medium cursor-pointer text-sm sm:text-base mb-1.5 sm:mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors"
                             >
@@ -532,14 +552,14 @@ export default function Home() {
             {/* Navigation Arrows remain the same */}
             <button
               onClick={() => handleSlide("prev")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 sm:-translate-x-2 bg-white/90 backdrop-blur-sm p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 sm:-translate-x-2 bg-white/90 backdrop-blur-sm p-2 sm:p-3 rounded-md sm:rounded-xl shadow-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={currentProduct === 0}
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               onClick={() => handleSlide("next")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 sm:translate-x-2 bg-white/90 backdrop-blur-sm p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 sm:translate-x-2 bg-white/90 backdrop-blur-sm p-2 sm:p-3 rounded-md sm:rounded-xl shadow-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={
                 currentProduct >= products.length - displayCount.products
               }
@@ -627,7 +647,7 @@ export default function Home() {
               >
                 {testimonials.map((testimonial) => (
                   <div
-                    key={testimonial.id}
+                    key={testimonial._id}
                     className="min-w-[100%] sm:min-w-[50%] lg:min-w-[33.333%] px-2 sm:px-3 md:px-4"
                   >
                     <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 h-full border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -700,14 +720,14 @@ export default function Home() {
             {/* Navigation Arrows */}
             <button
               onClick={() => handleTestimonialSlide("prev")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 sm:-translate-x-3 bg-white/90 backdrop-blur-sm p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 sm:-translate-x-3 bg-white/90 backdrop-blur-sm p-2 sm:p-3 rounded-md sm:rounded-xl shadow-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={currentTestimonial === 0}
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
             </button>
             <button
               onClick={() => handleTestimonialSlide("next")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 sm:translate-x-3 bg-white/90 backdrop-blur-sm p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 sm:translate-x-3 bg-white/90 backdrop-blur-sm p-2 sm:p-3 rounded-md sm:rounded-xl shadow-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={
                 currentTestimonial >=
                 testimonials.length - displayCount.testimonials
@@ -857,8 +877,11 @@ export default function Home() {
                 </span>
               </div>
               <div className="h-4 w-px bg-gray-300 hidden sm:block" />
-              <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium">
-                Join Our Network
+              <button
+                onClick={() => router.push("/contact")}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium"
+              >
+                Contact Us
                 <ArrowRight className="w-4 h-4 ml-2" />
               </button>
             </div>

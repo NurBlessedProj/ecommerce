@@ -22,24 +22,47 @@ import {
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { productData } from "../../../products";
+import { useCart } from "@/context/cart";
 
 const CatalogContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // State variables
-  const [products, setProducts] = useState(productData);
-  const [filteredProducts, setFilteredProducts] = useState(productData);
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { addToCart } = useCart();
+  const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
     category: "all",
     priceRange: "all",
     brand: "all",
     sortBy: "newest",
   });
+  
+  const API_URL = "http://localhost:5000/api";
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/products`);
+      const data = await response.json();
+      if (data.success) {
+        setProducts(data.data);
+        setFilteredProducts(data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const productsPerPage = 12;
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
@@ -283,7 +306,7 @@ const CatalogContent = () => {
             <aside
               className={`md:w-72 ${showFilters ? "block" : "hidden md:block"}`}
             >
-              <div className="bg-white p-6 rounded-lg shadow-sm sticky top-[3em]">
+              <div className="bg-white p-6 rounded-md shadow-sm sticky top-[3em]">
                 <div className="space-y-8">
                   {/* Category Filter */}
                   <div>
@@ -340,7 +363,7 @@ const CatalogContent = () => {
                               priceRange[1],
                             ])
                           }
-                          className="w-24 px-3 py-2 border rounded-lg text-sm"
+                          className="w-24 px-3 py-2 border rounded-md text-sm"
                           placeholder="Min"
                         />
                         <span className="text-gray-400">-</span>
@@ -353,7 +376,7 @@ const CatalogContent = () => {
                               Number(e.target.value),
                             ])
                           }
-                          className="w-24 px-3 py-2 border rounded-lg text-sm"
+                          className="w-24 px-3 py-2 border rounded-md text-sm"
                           placeholder="Max"
                         />
                       </div>
@@ -448,24 +471,21 @@ const CatalogContent = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {getCurrentProducts().map((product) => (
                   <div
-                    onClick={() => handleProductClick(product.id)}
-                    key={product.id}
+                    onClick={() => handleProductClick(product._id)}
+                    key={product._id}
                     className="group relative bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
                   >
                     <div className="relative aspect-square">
                       <Image
-                        src={product.image}
+                        src={product.images[0]?.url}
                         alt={product.name}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
-                          <button className="px-4 py-2 bg-white text-gray-900 rounded-lg text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors">
+                          <button className="px-4 py-2 bg-white text-gray-900 rounded-md text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors">
                             Quick View
-                          </button>
-                          <button className="p-2 bg-white rounded-full hover:bg-blue-600 hover:text-white transition-colors">
-                            <Heart className="w-5 h-5" />
                           </button>
                         </div>
                       </div>
@@ -548,7 +568,7 @@ const CatalogContent = () => {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 rounded-md border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
@@ -568,7 +588,7 @@ const CatalogContent = () => {
                       <button
                         key={pageNum}
                         onClick={() => handlePageChange(pageNum)}
-                        className={`w-10 h-10 rounded-lg border ${
+                        className={`w-10 h-10 rounded-md border ${
                           currentPage === pageNum
                             ? "bg-blue-600 text-white"
                             : "bg-white hover:bg-gray-50"
@@ -581,7 +601,7 @@ const CatalogContent = () => {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 rounded-md border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
