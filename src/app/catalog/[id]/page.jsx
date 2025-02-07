@@ -338,7 +338,7 @@ export default function ProductDetails({ params }) {
                   >
                     <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                   </button>
-                  <button
+                  <buttoPPn
                     onClick={nextPage}
                     disabled={
                       (currentPage + 1) * productsPerPage >=
@@ -347,7 +347,7 @@ export default function ProductDetails({ params }) {
                     className="p-1.5 sm:p-2 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
                   >
                     <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </button>
+                  </buttoPPn>
                 </div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">

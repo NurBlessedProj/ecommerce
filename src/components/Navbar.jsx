@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef, memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/cart";
-import { productData } from "../../products";
 import { useUser } from "@/context/user";
 
 // Add to the existing imports and hooks
@@ -91,8 +90,8 @@ const SearchBar = memo(
             <div className="py-2">
               {filteredProducts.map((product) => (
                 <Link
-                  href={`/catalog/${product.id}`}
-                  key={product.id}
+                  href={`/catalog/${product._id}`}
+                  key={product._id}
                   className="flex items-center px-4 py-3 hover:bg-gray-50 transition-colors"
                   onClick={() => {
                     setShowSuggestions(false);
@@ -102,7 +101,7 @@ const SearchBar = memo(
                 >
                   <div className="relative w-12 h-12 rounded-sm overflow-hidden bg-gray-100">
                     <Image
-                      src={product.image}
+                      src={product.images[0]?.url}
                       alt={product.name}
                       fill
                       className="object-cover"
@@ -147,6 +146,30 @@ const Navbar = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const { user, logout } = useUser();
+  const [productData, setProductData] = useState([]);
+
+  
+  const API_URL = "https://itapole-backend.onrender.com/api";
+  // const API_URL = "http://localhost:5000/api";
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/products`);
+      const data = await response.json();
+      if (data.success) {
+        setProductData(data.data);
+        setFilteredProducts(data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
