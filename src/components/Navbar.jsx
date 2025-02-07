@@ -29,6 +29,7 @@ const SearchBar = memo(
     setIsMobileMenuOpen,
     isSearchFocused,
     setIsSearchFocused,
+    productData,
   }) => (
     <div
       className={`relative ${
@@ -146,9 +147,9 @@ const Navbar = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const { user, logout } = useUser();
+  const [loading, setLoading] = useState(false);
   const [productData, setProductData] = useState([]);
 
-  
   const API_URL = "https://itapole-backend.onrender.com/api";
   // const API_URL = "http://localhost:5000/api";
 
@@ -243,6 +244,7 @@ const Navbar = () => {
             filteredProducts={filteredProducts}
             setIsMobileMenuOpen={setIsMobileMenuOpen}
             isSearchFocused={isSearchFocused}
+            productData={productData}
             setIsSearchFocused={setIsSearchFocused}
           />
           <nav className="hidden md:flex items-center space-x-6">
