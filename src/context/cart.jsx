@@ -1,84 +1,158 @@
-// src/context/cart.js
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+import { toast } from "sonner";
+import { useUser } from "./user";
 
 const CartContext = createContext();
+const API_BASE_URL = "https://itapole-backend.onrender.com/api";
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
   const [cartCount, setCartCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const { user } = useUser();
 
-  // Load cart from localStorage on mount
+  // Update cart count whenever cart changes - using cart.length instead
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      const parsedCart = JSON.parse(savedCart);
-      setCart(parsedCart);
-      updateCartCount(parsedCart);
-    }
-  }, []);
-
-  // Save cart to localStorage and update count whenever it changes
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartCount(cart);
+    setCartCount(cart.length);
   }, [cart]);
 
-  // Calculate cart total
+  const fetchCart = async () => {
+    if (!user) {
+      setCart([]);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/cart?userId=${user.id}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch cart");
+      }
+
+      setCart(data.items || []);
+    } catch (error) {
+      toast.error("Failed to load cart");
+      console.error("Error fetching cart:", error);
+      setCart([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCart();
+  }, [user]);
+
+  const addToCart = async (product, quantity = 1) => {
+    if (!user) {
+      toast.error("Please log in to add items to cart");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/cart/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          productId: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: parseInt(quantity),
+          image: product.image,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add item to cart");
+      }
+
+      setCart(data.items || []);
+      toast.success("Added to cart successfully");
+    } catch (error) {
+      toast.error("Failed to update cart");
+      console.error("Error updating cart:", error);
+      throw error;
+    }
+  };
+
+  const removeFromCart = async (productId, size) => {
+    if (!user) {
+      toast.error("Please log in to manage your cart");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/cart/remove/${productId}/${size}?userId=${user.id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to remove item from cart");
+      }
+
+      setCart(data.items || []);
+      toast.success("Item removed from cart");
+    } catch (error) {
+      toast.error("Failed to remove item from cart");
+      console.error("Error removing from cart:", error);
+    }
+  };
+
+  const updateQuantity = async (productId, size, newQuantity) => {
+    if (!user) {
+      toast.error("Please log in to manage your cart");
+      return;
+    }
+
+    if (newQuantity < 1) {
+      toast.error("Quantity must be at least 1");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/cart/update/${productId}/${size}?userId=${user.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ quantity: newQuantity }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update quantity");
+      }
+
+      setCart(data.items || []);
+      toast.success("Cart updated successfully");
+    } catch (error) {
+      toast.error("Failed to update quantity");
+      console.error("Error updating quantity:", error);
+    }
+  };
+
   const cartTotal = cart.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
-
-  // Update cart count
-  const updateCartCount = (currentCart) => {
-    const count = currentCart.reduce((total, item) => total + item.quantity, 0);
-    setCartCount(count);
-  };
-
-  // Add to cart - Fixed version
-  const addToCart = (product, quantity = 1, size) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find(
-        (item) => item.id === product.id && item.size === size
-      );
-
-      if (existingItem) {
-        // Update existing item
-        return prevCart.map((item) =>
-          item.id === product.id && item.size === size
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      } else {
-        // Add new item
-        return [...prevCart, { ...product, quantity, size }];
-      }
-    });
-  };
-
-  // Remove from cart
-  const removeFromCart = (productId, size) => {
-    setCart((prevCart) =>
-      prevCart.filter(
-        (item) => !(item.id === productId && item.size === size)
-      )
-    );
-  };
-
-  // Update quantity
-  const updateQuantity = (productId, size, newQuantity) => {
-    if (newQuantity < 1) return;
-    
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === productId && item.size === size
-          ? { ...item, quantity: newQuantity }
-          : item
-      )
-    );
-  };
 
   return (
     <CartContext.Provider
@@ -86,9 +160,11 @@ export function CartProvider({ children }) {
         cart,
         cartTotal,
         cartCount,
+        loading,
         addToCart,
         removeFromCart,
         updateQuantity,
+        refreshCart: fetchCart,
       }}
     >
       {children}

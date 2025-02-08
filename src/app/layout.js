@@ -1,8 +1,8 @@
 // src/app/layout.js
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import { CartProvider } from "@/context/cart"; // Update the import
-import { SearchProvider } from "@/context/search"; // Add this import
+import { CartProvider } from "@/context/cart";
+import { SearchProvider } from "@/context/search";
 import { Toaster } from "sonner";
 import { UserProvider } from "@/context/user";
 import { AuthProvider } from "@/context/auth";
@@ -23,21 +23,20 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${montserrat.variable} font-sans antialiased`}>
-        <SearchProvider>
-          <CartProvider>
-            <UserProvider>
-              <AuthProvider>
+        <UserProvider>
+          <AuthProvider>
+            <SearchProvider>
+              <CartProvider>
                 <Toaster richColors position="top-right" expand />
                 {children}
-
                 <script
                   src="//code.tidio.co/zxjsknngtt4kdpz7oplu3hqihnabniqr.js"
                   async
                 ></script>
-              </AuthProvider>
-            </UserProvider>
-          </CartProvider>
-        </SearchProvider>
+              </CartProvider>
+            </SearchProvider>
+          </AuthProvider>
+        </UserProvider>
       </body>
     </html>
   );

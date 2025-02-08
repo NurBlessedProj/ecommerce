@@ -11,12 +11,11 @@
     font-family: var(--font-montserrat);
   }
 }
-*{
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   font-size: 15px;
-
 }
 
 /* Optional: Add custom styles for font weights */
@@ -50,16 +49,128 @@
   }
 }
 
+/* styles/rangeSlider.css */
+.slider {
+  position: relative;
+  width: 100%;
+}
 
+.slider__track,
+.slider__range {
+  position: absolute;
+  border-radius: 3px;
+  height: 4px;
+}
 
+.slider__track {
+  background-color: #e5e7eb;
+  width: 100%;
+  z-index: 1;
+}
 
+.slider__range {
+  background-color: #3b82f6;
+  z-index: 2;
+}
 
+/* Removing the default appearance */
+.thumb,
+.thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
 
+.thumb {
+  pointer-events: none;
+  position: absolute;
+  height: 0;
+  width: 100%;
+  outline: none;
+}
 
+.thumb--left {
+  z-index: 3;
+}
 
+.thumb--right {
+  z-index: 4;
+}
 
+/* For Chrome browsers */
+.thumb::-webkit-slider-thumb {
+  background-color: #ffffff;
+  border: 2px solid #3b82f6;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  height: 18px;
+  width: 18px;
+  margin-top: 4px;
+  pointer-events: all;
+  position: relative;
+  transition: transform 0.2s ease;
+}
 
+.thumb::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
 
+.thumb::-webkit-slider-thumb:active {
+  transform: scale(0.9);
+  background-color: #3b82f6;
+  border-color: #ffffff;
+}
 
+/* For Firefox browsers */
+.thumb::-moz-range-thumb {
+  background-color: #ffffff;
+  border: 2px solid #3b82f6;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  height: 18px;
+  width: 18px;
+  margin-top: 4px;
+  pointer-events: all;
+  position: relative;
+  transition: transform 0.2s ease;
+}
 
+.thumb::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
 
+.thumb::-moz-range-thumb:active {
+  transform: scale(0.9);
+  background-color: #3b82f6;
+  border-color: #ffffff;
+}
+
+.slider__left-value,
+.slider__right-value {
+  color: #6b7280;
+  font-size: 12px;
+  position: absolute;
+  top: 20px;
+}
+
+.slider__left-value {
+  left: 0;
+}
+
+.slider__right-value {
+  right: 0;
+}
+@keyframes bounce-x {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(25%);
+  }
+}
+
+.animate-bounce-x {
+  animation: bounce-x 1s infinite;
+}

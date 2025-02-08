@@ -8,16 +8,28 @@ export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load user from localStorage on mount
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const userData = JSON.parse(savedUser);
+      // Ensure the user object has an id property
+      setUser({
+        ...userData,
+        id: userData._id || userData.id, // MongoDB uses _id, we normalize to id
+      });
     }
     setIsLoading(false);
   }, []);
 
-  // Save user to localStorage whenever it changes
+  const login = (userData) => {
+    // Normalize the user data structure
+    const normalizedUser = {
+      ...userData,
+      id: userData._id || userData.id,
+    };
+    setUser(normalizedUser);
+  };
+
   useEffect(() => {
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
@@ -25,10 +37,6 @@ export function UserProvider({ children }) {
       localStorage.removeItem("user");
     }
   }, [user]);
-
-  const login = (userData) => {
-    setUser(userData);
-  };
 
   const logout = () => {
     setUser(null);

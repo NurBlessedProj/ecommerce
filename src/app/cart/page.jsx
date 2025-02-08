@@ -4,14 +4,44 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/cart";
-import Navbar from "@/components/Navbar"; // Adjust import path as needed
-import Footer from "@/components/Footer"; // Adjust import path as needed
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Minus, Plus, X, ShoppingBag } from "lucide-react";
+import { toast } from "sonner";
 
 export default function CartPage() {
-  const { cart, cartTotal, removeFromCart, updateQuantity } = useCart();
+  const { cart, cartTotal, removeFromCart, updateQuantity, loading } =
+    useCart();
 
-  if (cart.length === 0) {
+  const handleQuantityUpdate = async (productId, size, newQuantity) => {
+    if (newQuantity < 1) {
+      toast.error("Quantity cannot be less than 1");
+      return;
+    }
+    await updateQuantity(productId, size, newQuantity);
+  };
+
+  const handleRemoveItem = async (productId, size) => {
+    try {
+      await removeFromCart(productId, size);
+    } catch (error) {
+      console.error("Error removing item:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (!cart || cart.length === 0) {
     return (
       <>
         <Navbar />
@@ -46,12 +76,12 @@ export default function CartPage() {
           <div className="lg:col-span-2 space-y-4">
             {cart.map((item) => (
               <div
-                key={`${item.id}-${item.size}`}
+                key={`${item.productId}-${item.size}`}
                 className="flex gap-4 p-4 border rounded-md"
               >
                 <div className="relative w-24 h-24">
                   <Image
-                    src={item.images[0]?.url}
+                    src={item.image}
                     alt={item.name}
                     fill
                     className="object-cover rounded-md"
@@ -62,8 +92,11 @@ export default function CartPage() {
                   <div className="flex justify-between mb-2">
                     <h3 className="font-semibold">{item.name}</h3>
                     <button
-                      onClick={() => removeFromCart(item.id, item.size)}
-                      className="text-gray-400 hover:text-red-500"
+                      onClick={() =>
+                        handleRemoveItem(item.productId, item.size)
+                      }
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                      aria-label="Remove item"
                     >
                       <X className="w-5 h-5" />
                     </button>
@@ -77,18 +110,28 @@ export default function CartPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() =>
-                          updateQuantity(item.id, item.size, item.quantity - 1)
+                          handleQuantityUpdate(
+                            item.productId,
+                            item.size,
+                            item.quantity - 1
+                          )
                         }
-                        className="p-1 border rounded hover:border-blue-600"
+                        className="p-1 border rounded hover:border-blue-600 transition-colors"
+                        aria-label="Decrease quantity"
                       >
                         <Minus className="w-4 h-4" />
                       </button>
                       <span className="w-8 text-center">{item.quantity}</span>
                       <button
                         onClick={() =>
-                          updateQuantity(item.id, item.size, item.quantity + 1)
+                          handleQuantityUpdate(
+                            item.productId,
+                            item.size,
+                            item.quantity + 1
+                          )
                         }
-                        className="p-1 border rounded hover:border-blue-600"
+                        className="p-1 border rounded hover:border-blue-600 transition-colors"
+                        aria-label="Increase quantity"
                       >
                         <Plus className="w-4 h-4" />
                       </button>
@@ -126,6 +169,10 @@ export default function CartPage() {
 
               <button
                 onClick={() => {
+                  if (cart.length === 0) {
+                    toast.error("Your cart is empty");
+                    return;
+                  }
                   window.location.href = "/checkout";
                 }}
                 className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"

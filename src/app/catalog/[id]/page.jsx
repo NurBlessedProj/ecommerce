@@ -20,44 +20,78 @@ export default function ProductDetails({ params }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [images, setImages] = useState([]);
 
   const productsPerPage = 4;
   const router = useRouter();
   const { addToCart } = useCart();
+  // const API_URL = "http://localhost:4001/api";
   const API_URL = "https://itapole-backend.onrender.com/api";
 
-  const handleAddToCart = () => {
+  // In ProductDetails.js
+  const handleAddToCart = async () => {
     if (!user) {
-      // Redirect to login page if not logged in
+      toast.error("Please log in to add items to cart");
       router.push("/login");
       return;
     }
-    addToCart(productDetails, quantity);
-    toast.success("Product added to cart");
+
+    setIsLoading(true);
+    try {
+      const productToAdd = {
+        id: productDetails._id.toString(),
+        name: productDetails.name,
+        price: productDetails.price,
+        image: images[0]?.url,
+      };
+
+      await addToCart(productToAdd, quantity);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Failed to add to cart");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handlePayNow = () => {
+  const handlePayNow = async () => {
     if (!user) {
-      // Redirect to login page if not logged in
+      toast.error("Please log in to continue");
       router.push("/login");
       return;
     }
-    addToCart(productDetails, quantity);
-    router.push("/checkout");
+
+    try {
+      await addToCart(
+        {
+          id: productDetails._id,
+          name: productDetails.name,
+          price: productDetails.price,
+          image: images[0]?.url,
+        },
+        quantity
+      );
+      router.push("/checkout");
+    } catch (error) {
+      toast.error("Failed to process. Please try again.");
+      console.error("Error processing payment:", error);
+    }
   };
+
   // Fetch single product and set up related products
   useEffect(() => {
     const fetchProductAndRelated = async () => {
       try {
         setLoading(true);
-        // Fetch the specific product
         const response = await fetch(`${API_URL}/products/${params.id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch product");
+        }
         const data = await response.json();
 
         if (data.success) {
           setProductDetails(data.data);
-          // Set up images array from product data
           const productImages = data.data.images || [];
           setImages(
             productImages.length > 0
@@ -65,12 +99,14 @@ export default function ProductDetails({ params }) {
               : [{ url: data.data.image }]
           );
 
-          // Fetch all products to find related ones
+          // Fetch related products
           const allProductsResponse = await fetch(`${API_URL}/products`);
+          if (!allProductsResponse.ok) {
+            throw new Error("Failed to fetch related products");
+          }
           const allProductsData = await allProductsResponse.json();
 
           if (allProductsData.success) {
-            // Filter related products (same category, different ID)
             const related = allProductsData.data.filter(
               (p) =>
                 p.category === data.data.category && p._id !== data.data._id
@@ -79,6 +115,7 @@ export default function ProductDetails({ params }) {
           }
         }
       } catch (error) {
+        toast.error("Failed to load product details");
         console.error("Error fetching product:", error);
       } finally {
         setLoading(false);
@@ -89,6 +126,20 @@ export default function ProductDetails({ params }) {
       fetchProductAndRelated();
     }
   }, [params.id]);
+
+  const handleQuantityChange = (value) => {
+    const newValue = Math.max(1, Math.min(10, value));
+    if (value > 10) {
+      toast.error("Maximum quantity is 10");
+    } else if (value < 1) {
+      toast.error("Minimum quantity is 1");
+    }
+    setQuantity(newValue);
+  };
+  const handleRelatedProductClick = (productId) => {
+    setLoading(true);
+    router.push(`/catalog/${productId}`);
+  };
 
   const handleMouseMove = (e) => {
     if (!isZoomed) return;
@@ -114,10 +165,6 @@ export default function ProductDetails({ params }) {
     setIsZoomed(false);
   };
 
-  const handleQuantityChange = (value) => {
-    setQuantity(Math.max(1, Math.min(10, value)));
-  };
-
   const nextPage = () => {
     setCurrentPage((prev) =>
       Math.min(
@@ -131,14 +178,33 @@ export default function ProductDetails({ params }) {
     setCurrentPage((prev) => Math.max(0, prev - 1));
   };
 
-  if (loading || !productDetails) {
+  // if (loading || !productDetails) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+  //     </div>
+  //   );
+  // }
+  if (!productDetails) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Product Not Found
+          </h2>
+          <p className="text-gray-600 mb-4">
+            The product you're looking for doesn't exist or has been removed.
+          </p>
+          <Link
+            href="/catalog"
+            className="text-blue-600 hover:text-blue-700 font-medium"
+          >
+            Return to Catalog
+          </Link>
+        </div>
       </div>
     );
   }
-
   const displayedProducts = relatedProducts.slice(
     currentPage * productsPerPage,
     (currentPage + 1) * productsPerPage
@@ -224,7 +290,7 @@ export default function ProductDetails({ params }) {
 
               {/* Thumbnail Gallery */}
               {images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-2">
+                <div className="flex gap-2 overflow-x-auto py-5  px-2 pb-2">
                   {images.map((image, index) => (
                     <button
                       key={index}
@@ -338,7 +404,7 @@ export default function ProductDetails({ params }) {
                   >
                     <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                   </button>
-                  <buttoPPn
+                  <button
                     onClick={nextPage}
                     disabled={
                       (currentPage + 1) * productsPerPage >=
@@ -347,14 +413,14 @@ export default function ProductDetails({ params }) {
                     className="p-1.5 sm:p-2 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
                   >
                     <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </buttoPPn>
+                  </button>
                 </div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                 {displayedProducts.map((product) => (
-                  <Link
-                    href={`/catalog/${product.id}`}
-                    key={product.id}
+                  <div
+                    onClick={() => handleRelatedProductClick(product)}
+                    key={product._id}
                     className="group"
                   >
                     <div className="bg-white rounded-md sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
@@ -377,7 +443,7 @@ export default function ProductDetails({ params }) {
                         </div>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </section>
