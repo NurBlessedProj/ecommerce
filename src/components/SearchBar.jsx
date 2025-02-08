@@ -115,12 +115,7 @@ const SearchBar = memo(
     });
 
     // Simulated trending searches
-    const trendingSearches = [
-      "Makeup",
-      "Skincare",
-      "Haircare",
-      "Body Care",
-    ];
+    const trendingSearches = ["Makeup", "Skincare", "Haircare", "Body Care"];
 
     const handleSearchSelect = (search) => {
       setSearchQuery(search);
@@ -140,7 +135,7 @@ const SearchBar = memo(
 
     return (
       <div
-        className={`relative ${
+        className={`relative z-[999999] ${
           isMobile ? "w-full" : "hidden md:block flex-1 max-w-2xl mx-8"
         }`}
       >

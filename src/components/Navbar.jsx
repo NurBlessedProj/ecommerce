@@ -193,7 +193,7 @@ const Navbar = () => {
     <>
       <AnnouncementBar />
       <header
-        className={`sticky top-0 z-[9999] transition-all duration-300 backdrop-blur-md
+        className={`sticky top-0 z-[99] transition-all duration-300 backdrop-blur-md
         ${
           isScrolled
             ? "bg-white/80 shadow-lg"
@@ -378,13 +378,13 @@ const Navbar = () => {
             <>
               {/* Backdrop */}
               <div
-                className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[9998] md:hidden animate-fade-in"
+                className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[998] md:hidden animate-fade-in"
                 onClick={() => setIsMobileMenuOpen(false)}
               />
 
               {/* Menu Content */}
               <div
-                className="fixed inset-0 w-full h-[100dvh] bg-white z-[9999] md:hidden 
+                className="fixed inset-0 w-full h-[100dvh] bg-white z-[999] md:hidden 
       animate-menu-slide overflow-auto"
               >
                 <div className="flex flex-col min-h-full">
