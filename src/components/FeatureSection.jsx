@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
+import { useUser } from "@/context/user";
 
 function FeatureSection({ products, mainContentClass, user }) {
   const router = useRouter();
@@ -113,17 +114,37 @@ function FeatureSection({ products, mainContentClass, user }) {
   };
 
   const ProductCard = ({ product }) => {
+    const { user } = useUser();
+    const [isLoading, setIsLoading] = useState(false);
     const { addToCart } = useCart();
     const [isHovered, setIsHovered] = useState(false);
     const [isWishlisted, setIsWishlisted] = useState(false);
+    const [quantity, setQuantity] = useState(1);
 
-    const handleAddToCart = () => {
+    // In ProductDetails.js
+    const handleAddToCart = async () => {
       if (!user) {
+        toast.error("Please log in to add items to cart");
         router.push("/login");
         return;
       }
-      addToCart(product);
-      toast.success("Product added to cart!");
+
+      setIsLoading(true);
+      try {
+        const productToAdd = {
+          id: product._id.toString(),
+          name: product.name,
+          price: product.price,
+          image: product.images[0]?.url,
+        };
+
+        await addToCart(productToAdd, quantity);
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        toast.error("Failed to add to cart");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     const handleWishlist = () => {

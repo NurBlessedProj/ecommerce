@@ -65,7 +65,7 @@ const ContactPage = () => {
       try {
         setIsSubmitting(true);
 
-        const response = await fetch(`https://itapole-backend.onrender.com/api/contact`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

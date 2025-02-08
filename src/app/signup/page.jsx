@@ -89,7 +89,7 @@ const SignupForm = () => {
     }
 
     try {
-      const response = await fetch("https://itapole-backend.onrender.com/api/auth/signup", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -46,13 +46,15 @@ export default function Home() {
   const mainContentClass = "max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8";
   const { user } = useUser();
 
-  const API_URL = "https://itapole-backend.onrender.com/api";
+  // const API_URL = "https://itapole-backend.onrender.com/api";
   // const API_URL = "http://localhost:4001/api";
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/products`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/products`
+      );
       const data = await response.json();
       if (data.success) {
         setProducts(data.data);

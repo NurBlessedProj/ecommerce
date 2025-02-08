@@ -264,7 +264,7 @@ function SearchingBar() {
 
       try {
         setLoading(true);
-        const response = await fetch(`${API_URL}/products`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
         const data = await response.json();
         if (data.success) {
           const filtered = data.data

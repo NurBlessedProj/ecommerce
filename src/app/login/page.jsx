@@ -46,9 +46,7 @@ const SimpleFooter = () => (
   <footer className="bg-white/80 backdrop-blur-md border-t border-gray-100 py-6">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center text-sm text-gray-500">
-        <p>
-          &copy; {new Date().getFullYear()} ITAPELO. All rights reserved.
-        </p>
+        <p>&copy; {new Date().getFullYear()} ITAPELO. All rights reserved.</p>
         <div className="mt-2 space-x-4">
           <Link
             href="/privacy"
@@ -81,13 +79,16 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://itapole-backend.onrender.com/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await response.json();
 
@@ -190,8 +191,6 @@ const LoginForm = () => {
                     </button>
                   </div>
                 </div>
-
-              
 
                 <Button
                   type="submit"

@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const response = await fetch(
-        "https://itapole-backend.onrender.com/api/admin/login",
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/login`,
         {
           method: "POST",
           headers: {

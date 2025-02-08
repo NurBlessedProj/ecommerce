@@ -1,4 +1,6 @@
 "use client";
+import { useCart } from "@/context/cart";
+import { useUser } from "@/context/user";
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,13 +15,50 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-function CatalogProducts({ filters, priceRange, ratingFilter, searchQuery , setFilters}) {
+function CatalogProducts({
+  filters,
+  priceRange,
+  ratingFilter,
+  searchQuery,
+  setFilters,
+}) {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [products, setProducts] = useState([]);
+  const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [hoveredProduct, setHoveredProduct] = useState(null);
+  const {addToCart } = useCart();
+
+  const [quantity, setQuantity] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAddToCart = async (productDetails) => {
+    if (!user) {
+      toast.error("Please log in to add items to cart");
+      router.push("/login");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const productToAdd = {
+        id: productDetails._id.toString(),
+        name: productDetails.name,
+        price: productDetails.price,
+        image: productDetails.images[0]?.url,
+      };
+
+      await addToCart(productToAdd, quantity);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Failed to add to cart");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const productsPerPage = 12;
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
@@ -35,7 +74,9 @@ function CatalogProducts({ filters, priceRange, ratingFilter, searchQuery , setF
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/products`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/products`
+      );
       const data = await response.json();
       if (data.success) {
         setProducts(data.data);
@@ -160,7 +201,10 @@ function CatalogProducts({ filters, priceRange, ratingFilter, searchQuery , setF
                   <button className="w-12 h-12 bg-white flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
                     <Heart className="w-5 h-5" />
                   </button>
-                  <button className="w-12 h-12 bg-white flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className="w-12 h-12 bg-white flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"
+                  >
                     <ShoppingCart className="w-5 h-5" />
                   </button>
                   <button

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useUser } from "./user";
 
 const CartContext = createContext();
-const API_BASE_URL = "https://itapole-backend.onrender.com/api";
+const NEXT_PUBLIC_API_URL = "https://itapole-backend.onrender.com/api";
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
@@ -26,7 +26,9 @@ export function CartProvider({ children }) {
 
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/cart?userId=${user.id}`);
+      const response = await fetch(
+        `${NEXT_PUBLIC_API_URL}/cart?userId=${user.id}`
+      );
       const data = await response.json();
 
       if (!response.ok) {
@@ -46,7 +48,6 @@ export function CartProvider({ children }) {
   useEffect(() => {
     fetchCart();
   }, [user]);
-
   const addToCart = async (product, quantity = 1) => {
     if (!user) {
       toast.error("Please log in to add items to cart");
@@ -54,20 +55,35 @@ export function CartProvider({ children }) {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/cart/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          productId: product.id,
-          name: product.name,
-          price: product.price,
-          quantity: parseInt(quantity),
-          image: product.image,
-        }),
-      });
+      // First check if the item already exists in the cart
+      const existingItem = cart.find((item) => item.productId === product.id);
+      const newQuantity = existingItem
+        ? existingItem.quantity + parseInt(quantity)
+        : parseInt(quantity);
+
+      // Validate quantity
+      if (newQuantity > 10) {
+        toast.error("Maximum quantity allowed is 10");
+        return;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/cart/add`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            productId: product.id,
+            name: product.name,
+            price: product.price,
+            quantity: newQuantity,
+            image: product.image,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -92,7 +108,7 @@ export function CartProvider({ children }) {
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/cart/remove/${productId}/${size}?userId=${user.id}`,
+        `${NEXT_PUBLIC_API_URL}/cart/remove/${productId}/${size}?userId=${user.id}`,
         {
           method: "DELETE",
         }
@@ -125,7 +141,7 @@ export function CartProvider({ children }) {
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/cart/update/${productId}/${size}?userId=${user.id}`,
+        `${NEXT_PUBLIC_API_URL}/cart/update/${productId}/${size}?userId=${user.id}`,
         {
           method: "PUT",
           headers: {

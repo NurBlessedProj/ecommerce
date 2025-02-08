@@ -20,7 +20,7 @@ import Footer from "@/components/Footer";
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 // API base URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://itapole-backend.onrender.com/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL ;
 
 const CheckoutForm = ({ orderDetails, onSuccess }) => {
   const stripe = useStripe();
@@ -115,7 +115,7 @@ const PaymentPage = () => {
       setOrderDetails(order);
 
       try {
-        const response = await fetch(`${API_URL}/api/create-payment-intent`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/create-payment-intent`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ amount: order.total }),
