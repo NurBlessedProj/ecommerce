@@ -1,22 +1,21 @@
 "use client";
-import React, { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { CheckCircle } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import React, { Suspense, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { CheckCircle } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
-const OrderSuccessPage = () => {
+const OrderContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   useEffect(() => {
-    const payment_intent = searchParams.get('payment_intent');
+    const payment_intent = searchParams.get("payment_intent");
     if (payment_intent) {
-      localStorage.removeItem('pendingOrder');
-      localStorage.removeItem('cart');
+      localStorage.removeItem("pendingOrder");
+      localStorage.removeItem("cart");
     }
   }, [searchParams]);
-
   return (
     <>
       <Navbar />
@@ -30,10 +29,11 @@ const OrderSuccessPage = () => {
               Payment Successful!
             </h1>
             <p className="text-gray-600 mb-8">
-              Thank you for your purchase. Your order has been confirmed and will be shipped soon.
+              Thank you for your purchase. Your order has been confirmed and
+              will be shipped soon.
             </p>
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.push("/")}
               className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors w-full"
             >
               Return to Home
@@ -43,6 +43,13 @@ const OrderSuccessPage = () => {
       </div>
       <Footer />
     </>
+  );
+};
+const OrderSuccessPage = () => {
+  return (
+    <Suspense>
+      <OrderContent />
+    </Suspense>
   );
 };
 
