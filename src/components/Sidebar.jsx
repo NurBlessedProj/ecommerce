@@ -122,7 +122,7 @@ const Sidebar = ({
 
       <aside
         className={`
-          fixed inset-y-0 right-0 z-[9999] md:-z-[1] w-[85%] max-w-[400px] bg-white md:relative md:w-72 md:flex-shrink-0
+          fixed inset-y-0 right-0 z-[9999] md:z-[1] w-[85%] max-w-[400px] bg-white md:relative md:w-72 md:flex-shrink-0
           transform transition-all duration-300 ease-in-out shadow-xl md:shadow-none
           ${
             showFilters
