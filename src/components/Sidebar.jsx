@@ -326,7 +326,7 @@ const Sidebar = ({
         </div>
 
         {/* Desktop Reset Button */}
-        <div className="hidden md:block sticky bottom-0 p-6 bg-white border-t border-gray-100">
+        <div className="hidden z-[9] md:block sticky bottom-0 p-6 bg-white border-t border-gray-100">
           <button
             onClick={handleResetFilters}
             className="w-full px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
