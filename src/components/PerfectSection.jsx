@@ -8,6 +8,7 @@ import {
   Truck,
 } from "lucide-react";
 import React from "react";
+import Link from "next/link";
 
 const features = [
   {
