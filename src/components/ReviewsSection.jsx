@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight, Star, ThumbsUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 
 // Testimonials data
 const testimonials = [
