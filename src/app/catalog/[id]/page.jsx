@@ -178,13 +178,13 @@ export default function ProductDetails({ params }) {
     setCurrentPage((prev) => Math.max(0, prev - 1));
   };
 
-  // if (loading || !productDetails) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-  //     </div>
-  //   );
-  // }
+  if (loading && !productDetails) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
   if (!productDetails) {
     return (
       <div className="min-h-screen flex items-center justify-center">
