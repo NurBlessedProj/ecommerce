@@ -49,7 +49,7 @@ const AnnouncementBar = () => {
               className="flex items-center gap-2 hover:text-blue-100 transition-colors"
             >
               <Mail size={14} />
-              <span>info@cosmoprof.com</span>
+              <span>info@itapelo.com</span>
             </a>
             <div className="flex items-center gap-2">
               <MapPin size={14} />
