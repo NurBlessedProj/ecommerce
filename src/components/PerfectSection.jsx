@@ -191,10 +191,13 @@ function PerfectSection({ mainContentClass }) {
               </span>
             </div>
             <div className="h-6 hidden md:block w-px bg-gray-200" />
-            <button className="inline-flex items-center px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
+            <Link
+              href="/contact"
+              className="inline-flex items-center px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+            >
               <span className="text-sm font-medium">Contact Us</span>
               <ArrowRight className="w-4 h-4 ml-2" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>
