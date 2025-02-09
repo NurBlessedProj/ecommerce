@@ -44,7 +44,7 @@ const CatalogContent = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { addToCart } = useCart();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     category: "all",
     priceRange: "all",
@@ -56,6 +56,7 @@ const CatalogContent = () => {
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const [activeFilters, setActiveFilters] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [isLoading, setIsLoading] = useState(true);
   const [ratingFilter, setRatingFilter] = useState(0);
   const [availabilityFilter, setAvailabilityFilter] = useState("all");
 
@@ -298,7 +299,8 @@ const CatalogContent = () => {
               setRatingFilter={setRatingFilter}
               expandedSections={expandedSections}
               showFilters={showFilters} // Add this
-              onClose={() => setShowFilters(false)} // Add this
+              onClose={() => setShowFilters(false)}
+              isLoading={isLoading}
               setExpandedSections={setExpandedSections}
             />
             <CatalogProducts
@@ -308,6 +310,8 @@ const CatalogContent = () => {
               setFilters={setFilters}
               searchQuery={searchQuery}
               applyFilters={applyFilters}
+              isLoading={loading}
+              setLoading={setLoading}
             />
           </div>
         </div>

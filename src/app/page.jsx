@@ -76,8 +76,8 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <Banner />
-      <FeatureSection products={products} />
-      <TrendingSection products={products} />
+      <FeatureSection products={products} isLoading={loading} />
+      <TrendingSection products={products} isLoading={loading} />
       <ReviewsSection mainContentClass={mainContentClass} products={products} />
       <PerfectSection mainContentClass={mainContentClass} />
       <Footer />

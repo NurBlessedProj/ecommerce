@@ -76,8 +76,10 @@ const LoginForm = () => {
   const { login } = useUser();
   const router = useRouter();
 
+  const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
@@ -102,6 +104,8 @@ const LoginForm = () => {
     } catch (error) {
       toast.error("An error occurred during login");
       console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -115,7 +119,7 @@ const LoginForm = () => {
   return (
     <>
       <SimpleNavbar />
-      <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100 via-white to-purple-100 py-12 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100 via-white  py-12 px-4">
         <div className="max-w-md w-full space-y-8">
           <Card className="backdrop-blur-lg bg-white/90 shadow-2xl hover:shadow-3xl transition-all duration-500 border-0 rounded-2xl overflow-hidden">
             <CardContent className="pt-8 px-8">
@@ -194,10 +198,40 @@ const LoginForm = () => {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-purple-700 text-white transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-lg rounded-xl py-6"
+                  disabled={isLoading}
+                  className={`w-full bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-purple-700 text-white transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-lg rounded-xl py-6 flex items-center justify-center
+    ${isLoading ? "opacity-75 cursor-not-allowed" : ""}`}
                 >
-                  Sign in
-                  <ArrowRight className="ml-2 w-4 h-4 animate-bounce-x" />
+                  {isLoading ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Signing in...
+                    </>
+                  ) : (
+                    <>
+                      Sign in
+                      <ArrowRight className="ml-2 w-4 h-4 animate-bounce-x" />
+                    </>
+                  )}
                 </Button>
 
                 <div className="relative my-6">

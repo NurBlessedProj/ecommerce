@@ -16,7 +16,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { useUser } from "@/context/user";
 
-function FeatureSection({ products, mainContentClass, user }) {
+function FeatureSection({ products, mainContentClass, user, isLoading }) {
   const router = useRouter();
   const [currentProduct, setCurrentProduct] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -33,6 +33,7 @@ function FeatureSection({ products, mainContentClass, user }) {
     ];
     return ["all", ...uniqueCategories];
   }, [products]);
+
 
   // Filter products when tab changes
   useEffect(() => {
@@ -283,14 +284,42 @@ function FeatureSection({ products, mainContentClass, user }) {
                     </span>
                   </div>
                 </div>
-
                 <button
                   onClick={handleAddToCart}
+                  disabled={isLoading}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg
-            text-sm font-medium transition-colors flex items-center justify-center gap-2"
+    text-sm font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
                 >
-                  <ShoppingCart className="w-4 h-4" />
-                  Add to Cart
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="animate-spin h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      Adding...
+                    </div>
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-4 h-4" />
+                      Add to Cart
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -300,6 +329,36 @@ function FeatureSection({ products, mainContentClass, user }) {
     );
   };
 
+  if (isLoading) {
+    return (
+      <section className="pt-12 lg:pt-20 bg-gray-50/30">
+        <div className={`${mainContentClass} max-w-[1350px] mx-auto px-4`}>
+          <div className="text-center mb-12">
+            <span className="text-blue-600 font-medium text-sm tracking-wider uppercase mb-3 block">
+              Our Collection
+            </span>
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              Featured Products
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Discover our handpicked selection of premium beauty products
+            </p>
+          </div>
+
+          <div className="flex justify-center items-center min-h-[400px]">
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative w-20 h-20">
+                <div className="absolute top-0 left-0 w-full h-full">
+                  <div className="w-20 h-20 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm">Loading products...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
   return (
     <section className="pt-12 lg:pt-20 bg-gray-50/30">
       <div className={`${mainContentClass} max-w-[1350px] mx-auto px-4`}>

@@ -23,6 +23,8 @@ function CatalogProducts({
   ratingFilter,
   searchQuery,
   setFilters,
+  isLoading: parentLoading,
+  setLoading: setParentLoading,
 }) {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,11 +32,30 @@ function CatalogProducts({
   const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [hoveredProduct, setHoveredProduct] = useState(null);
-  const {addToCart } = useCart();
+  const { addToCart } = useCart();
 
   const [quantity, setQuantity] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [addingToCart, setAddingToCart] = useState(false);
+  const LoadingSkeleton = () => (
+    <div className="grid grid-cols-1 w-full sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      {[...Array(8)].map((_, i) => (
+        <div key={i} className="animate-pulse">
+          <div className="relative aspect-[3/4] w-full bg-gray-200 rounded-lg mb-4"></div>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="h-3 bg-gray-200 w-16 rounded"></div>
+              <div className="h-3 bg-gray-200 w-16 rounded"></div>
+            </div>
+            <div className="h-4 bg-gray-200 w-3/4 rounded"></div>
+            <div className="flex items-center justify-between">
+              <div className="h-5 bg-gray-200 w-20 rounded"></div>
+              <div className="h-4 bg-gray-200 w-12 rounded"></div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
   const handleAddToCart = async (productDetails) => {
     if (!user) {
       toast.error("Please log in to add items to cart");
@@ -42,7 +63,7 @@ function CatalogProducts({
       return;
     }
 
-    setIsLoading(true);
+    setAddingToCart(true);
     try {
       const productToAdd = {
         id: productDetails._id.toString(),
@@ -56,7 +77,7 @@ function CatalogProducts({
       console.error("Error adding to cart:", error);
       toast.error("Failed to add to cart");
     } finally {
-      setIsLoading(false);
+      setAddingToCart(false);
     }
   };
 
@@ -86,6 +107,7 @@ function CatalogProducts({
       console.error("Error fetching products:", error);
     } finally {
       setLoading(false);
+      setParentLoading(false);
     }
   };
 
@@ -157,19 +179,9 @@ function CatalogProducts({
     router.push(`/catalog/${productId}`);
   };
 
-  const LoadingSkeleton = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {[...Array(6)].map((_, i) => (
-        <div key={i} className="animate-pulse">
-          <div className="bg-gray-200 aspect-[3/4] w-full mb-4"></div>
-          <div className="h-4 bg-gray-200 w-3/4 mb-2"></div>
-          <div className="h-4 bg-gray-200 w-1/2"></div>
-        </div>
-      ))}
-    </div>
-  );
-
-  if (loading) return <LoadingSkeleton />;
+  if (parentLoading || loading) {
+    return <LoadingSkeleton />;
+  }
 
   return (
     <div className="min-h-screen w-full bg-white">
@@ -203,9 +215,16 @@ function CatalogProducts({
                   </button>
                   <button
                     onClick={() => handleAddToCart(product)}
-                    className="w-12 h-12 bg-white flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"
+                    disabled={addingToCart}
+                    className={`w-12 h-12 bg-white flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors ${
+                      addingToCart ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                   >
-                    <ShoppingCart className="w-5 h-5" />
+                    <ShoppingCart
+                      className={`w-5 h-5 ${
+                        addingToCart ? "animate-spin" : ""
+                      }`}
+                    />
                   </button>
                   <button
                     onClick={() => handleProductClick(product._id)}

@@ -41,7 +41,7 @@ const bottomBanners = [
   },
 ];
 
-const TrendingSection = ({ products }) => {
+const TrendingSection = ({ products, isLoading }) => {
   const router = useRouter();
 
   // Get top 6 products by rating
@@ -49,6 +49,45 @@ const TrendingSection = ({ products }) => {
     return [...products].sort((a, b) => b.rating - a.rating).slice(0, 5);
   }, [products]);
 
+  if (isLoading) {
+    return (
+      <div className="container max-w-[1350px] mx-auto px-4 py-12">
+        {/* Loading Header Skeleton */}
+        <div className="flex flex-col items-center justify-center mb-10">
+          <div className="w-10 h-10 bg-gray-200 rounded-full mb-3 animate-pulse"></div>
+          <div className="h-8 w-64 bg-gray-200 rounded mb-3 animate-pulse"></div>
+          <div className="h-4 w-96 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+
+        {/* Loading Products Grid Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
+          {[...Array(5)].map((_, index) => (
+            <div key={index} className="animate-pulse">
+              <div className="aspect-[4/5] rounded-xl bg-gray-200 mb-4"></div>
+              <div className="space-y-3">
+                <div className="h-2 w-20 bg-gray-200 rounded"></div>
+                <div className="h-4 w-full bg-gray-200 rounded"></div>
+                <div className="h-4 w-24 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Loading Featured Collections Skeleton */}
+        <div className="mt-16">
+          <div className="h-8 w-64 bg-gray-200 rounded mb-8 mx-auto"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, index) => (
+              <div
+                key={index}
+                className="aspect-[16/9] rounded-lg bg-gray-200 animate-pulse"
+              ></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="container max-w-[1350px] mx-auto px-4 py-12">
       {/* Enhanced Header with Trending Icon */}
